@@ -25,3 +25,5 @@ Coursework for the Operating Systems course at ITESO. Autumn 2015.
 8. Run the container: `docker run operating_systems`
 
 9. Start coding!
+
+There's a utility script that automates steps 2, 3 and 4. It can be executed in the following way: `source scripts/startdocker`

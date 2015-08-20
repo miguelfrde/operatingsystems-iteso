@@ -1,0 +1,5 @@
+docker-machine start default
+docker-machine env default
+docker-machine env default | sed '/^#/d' > .docker_env_default
+source .docker_env_default
+rm .docker_env_default
