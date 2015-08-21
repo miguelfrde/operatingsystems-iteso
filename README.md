@@ -62,3 +62,24 @@ There are two utility scripts (both should work on Linux and OSX):
 
 1. `startdocker`: automates steps 2, 3 and 4. Run it as: `source scripts/startdocker`
 2. `run`: automates the `docker run` command from step 9. Run it as: `./scripts/run`
+
+## Coding
+
+### Style guide
+
+Follow the parts relevant to C from the [Google C++ style guide](http://google.github.io/styleguide/cppguide.html).
+
+### Git flow
+
+When starting a new assignment or project, create a directory with a name relevant to the assignment in `src`.
+When adding a feature or fix to that assignment, create a branch with a name relevant to the assignment and feature
+and open a pull request to merge that branch to `master`. Let others check your code before merging the pull request.
+
+### Makefiles
+
+For simple makefiles, it's ok to use one like the [example one](src/example/Makefile).
+
+For more complex ones, abstract it and generalize on a way similar to the one in
+[miguelfrde/computergraphics/finalassignment](https://github.com/miguelfrde/computergraphics/blob/master/finalassignment/Makefile).
+
+If you need to learn about Makefiles, [this](http://nuclear.mutantstargoat.com/articles/make/) is a very good resource.
