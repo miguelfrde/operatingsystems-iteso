@@ -1,1 +1,1 @@
-docker run -v `pwd`/src:/osdev -ti operating_systems
+docker run -v `pwd`/src:/osdev -ti operating_systems /bin/bash
