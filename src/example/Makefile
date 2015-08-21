@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -O3 -g -Wall -Werror -D_USE_MATH_DEFINE
+CFLAGS := -O3 -g -Wall -Werror
 
 all: main
 
