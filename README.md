@@ -43,15 +43,10 @@ Coursework for the Operating Systems course at ITESO. Autumn 2015.
    $ docker build -t operating_systems .
    ```
 
-8. Run the container:
-   ```
-   $ docker run operating_systems
-   ```
-
-9. Verify everything is working correctly. Run the commands shown below, and you should get that output.
+8. Run the container and verify that everything is working correctly. Run the commands shown below, and you should get that output.
 
    ```
-   $ docker run -v `pwd`/src:/osdev -ti operating_systems
+   $ docker run -v `pwd`/src:/osdev -ti operating_systems /bin/bash
    root@e7280caf55e8:/osdev# cd example/
    root@e7280caf55e8:/osdev/example# make
    gcc -O3 -g -Wall -Werror -D_USE_MATH_DEFINE -c main.c -o main.o
