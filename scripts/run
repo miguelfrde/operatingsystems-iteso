@@ -1,0 +1,1 @@
+docker run -v `pwd`/src:/osdev -ti operating_systems
