@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -O3 -g -Wall -Werror
+CFLAGS := -O3 -g -Wall -Werror -std=c99
 
 all: main
 
