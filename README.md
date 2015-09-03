@@ -69,6 +69,8 @@ There are two utility scripts (both should work on Linux and OSX):
 
 Follow the parts relevant to C from the [Google C++ style guide](http://google.github.io/styleguide/cppguide.html).
 
+Some nice programming guidelines for C [here](https://github.com/btrask/stronglink/blob/master/SUBSTANCE.md)
+
 ### Git flow
 
 When starting a new assignment or project, create a directory with a name relevant to the assignment in `src`.
