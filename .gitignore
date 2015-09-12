@@ -29,5 +29,9 @@
 *.hex
 main
 
+#binaries
+dummygetty
+init
+
 # Debug files
 *.dSYM/
