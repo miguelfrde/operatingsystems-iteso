@@ -5,9 +5,9 @@ int main(){
 
 	int pid;
 	int i;
-	int status;
+	int status; //may not be needed
 
-	//crear los 6 procesos
+	//creates 6 procesess and replaces them with getty
 	for (i = 0; i < 6; ++i){
 		pid = fork();
 		if(pid == 0)
