@@ -12,8 +12,13 @@
  *   raw_input    Where the read input will be saved
  */
 void read_input(char* raw_input) {
+  size_t last_index;
   printf("$ ");
   fgets(raw_input, MAX_BUFFER_LEN, stdin);
+  last_index = strlen(raw_input) - 1;
+  if (raw_input[last_index] == '\n' || raw_input[last_index] == '\r') {
+    raw_input[last_index] = '\0';
+  }
 }
 
 /**
