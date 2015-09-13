@@ -24,7 +24,6 @@ void insert_substring(LinkedList* list, char* string, int start, int end) {
   char substring[MAX_BUFFER_LEN];
   strncpy(substring, string + start, end - start + 1);
   substring[end - start + 1] = '\0';
-  printf("> %s\n", substring);
   ll_insert(list, substring);
 }
 
