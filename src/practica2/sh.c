@@ -85,7 +85,7 @@ void execute_path_program(Command command) {
   LinkedListNode* arg;
   printf("Execute %s with args: ", command.name);
   for (arg = command.args.first; arg; arg = arg->next) {
-   printf("%s ", arg->value);
+    printf("%s ", arg->value);
   }
   printf("\n");
 }
@@ -125,7 +125,7 @@ int callback_set(LinkedList args) {
 int callback_echo(LinkedList args) {
   LinkedListNode* arg;
   for (arg = args.first; arg; arg = arg->next) {
-   printf("%s ", arg->value);
+    printf("%s ", arg->value);
   }
   printf("\n");
   return 0;
