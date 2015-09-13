@@ -30,6 +30,7 @@
 *.x86_64
 *.hex
 main
+src/practica2/sh
 
 #binaries
 dummygetty
@@ -38,3 +39,7 @@ Getty
 
 # Debug files
 *.dSYM/
+
+# Other
+src/practica1/
+src/bookexercises/
