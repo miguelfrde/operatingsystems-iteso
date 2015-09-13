@@ -7,7 +7,8 @@
  */
 typedef enum {
   RUNNING,
-  STOPPED
+  STOPPED,
+  SHUTDOWN
 } State;
 
 #endif

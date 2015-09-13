@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -O3 -g -Wall -Werror -std=c99
+CFLAGS := -O0 -g -Wall -Werror -std=c99
 LIB_DIR := lib
 
 SH_SRC := sh.c lib/linkedlist.c lib/sh_input.c
@@ -16,4 +16,4 @@ $(SH_MAIN): $(SH_OBJS)
 
 .PHONY: clean
 clean:
-	rm -f ./**/*.o *~ sh
+	rm -f *.o lib/*.o *~ sh
