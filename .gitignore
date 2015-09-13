@@ -3,6 +3,8 @@
 *.ko
 *.obj
 *.elf
+*~
+*.c~
 
 # Precompiled Headers
 *.gch
@@ -32,6 +34,7 @@ main
 #binaries
 dummygetty
 init
+Getty
 
 # Debug files
 *.dSYM/
