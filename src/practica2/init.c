@@ -11,7 +11,7 @@ int main(){
   for (i = 0; i < 6; ++i){
     pid = fork();
     if(pid == 0)
-      execlp("xterm", "xterm -e", "./dummygetty", NULL);
+      execlp("xterm", "xterm -e", "./getty", NULL);
 
     }
 
@@ -20,7 +20,7 @@ int main(){
     wait(&status);
     pid = fork();
     if(pid == 0)
-      execlp("xterm", "xterm -e", "./dummygetty", NULL);
+      execlp("xterm", "xterm -e", "./getty", NULL);
     }
 	
 }
