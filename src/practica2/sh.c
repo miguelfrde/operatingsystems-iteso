@@ -11,7 +11,7 @@
 
 typedef struct {
   char* command_name;
-  int (*callback)(LinkedList args);
+  void (*callback)(LinkedList args);
 } CommandCallback;
 
 /* Prototypes */
@@ -19,14 +19,13 @@ typedef struct {
 void execute_command(Command);
 void change_env_vars_by_its_value(LinkedList*);
 void execute_path_program(Command);
-int callback_shutdown(LinkedList);
-int callback_exit(LinkedList);
-int callback_set(LinkedList);
-int callback_echo(LinkedList);
+void callback_shutdown(LinkedList);
+void callback_exit(LinkedList);
+void callback_set(LinkedList);
+void callback_echo(LinkedList);
 
 /* Global variables */
 
-State state = RUNNING;
 const CommandCallback callbacks[4] = {
   {"shutdown", callback_shutdown},
   {"exit", callback_exit},
@@ -39,7 +38,7 @@ int main(int argc, char* argv[]) {
   Command command;
   bool read_successful;
 
-  while (state == RUNNING) {
+  while (true) {
     read_input(raw_input);
     read_successful = parse_input(raw_input, &command);
     if (read_successful) {
@@ -94,39 +93,33 @@ void execute_path_program(Command command) {
  * shutdown command, stops the shell process and notifies the
  * init process that it has to stop
  */
-int callback_shutdown(LinkedList args) {
-  // TODO: notify init process that it should die
-  state = SHUTDOWN;
-  return 0;
+void callback_shutdown(LinkedList args) {
+  exit(MESSAGE_SHUTDOWN_SHELL);
 }
 
 /**
  * exit command, stops the shell process and notifies the getty
  * parent process that it should stop
  */
-int callback_exit(LinkedList args) {
-  // TODO: notify getty parent process that it should die
-  state = STOPPED;
-  return 0;
+void callback_exit(LinkedList args) {
+  exit(MESSAGE_EXIT_SHELL);
 }
 
 /**
  * set command, sets and environment variable
  */
-int callback_set(LinkedList args) {
+void callback_set(LinkedList args) {
   // TODO: real implementation
   printf("set called\n");
-  return 0;
 }
 
 /**
  * echo command, prints the arguments given
  */
-int callback_echo(LinkedList args) {
+void callback_echo(LinkedList args) {
   LinkedListNode* arg;
   for (arg = args.first; arg; arg = arg->next) {
     printf("%s ", arg->value);
   }
   printf("\n");
-  return 0;
 }
