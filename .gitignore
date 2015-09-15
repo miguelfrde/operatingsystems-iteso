@@ -31,11 +31,14 @@
 *.hex
 main
 src/practica2/sh
+*.c~
+
 
 #binaries
 dummygetty
 init
 Getty
+Getty.c~
 
 # Debug files
 *.dSYM/
