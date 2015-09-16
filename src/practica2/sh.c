@@ -53,12 +53,16 @@ int main(int argc, char* argv[]) {
 /**
  * Changes the environment variables in the arguments by its value.
  * The environment variables are of the type $ENV_VAR.
- * It also replaces the environment variables that appear in
- * an arg surrounded by single quotes or double quotes.
- * If the environment value is not defined, it removes the argument.
  */
 void change_env_vars_by_its_value(LinkedList* args) {
-  // TODO: implement
+  LinkedListNode* arg;
+  for (arg = args->first; arg; arg = arg->next) {
+    if (arg->value[0] == '$') {
+      // Env var found, remove the dollar sign and find it in the env
+      char* env_val = getenv(arg->value + 1);
+      strcpy(arg->value, env_val);
+    }
+  }
 }
 
 /**
