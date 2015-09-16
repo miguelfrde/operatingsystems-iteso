@@ -2,13 +2,11 @@
 #define _PROGRAM_STATE_H_
 
 /**
- * The status of the program.
- * Running all the time, until 'shutdown' is called
+ * Notify `init` that the shell executed `exit` or `shutdown`
  */
 typedef enum {
-  RUNNING,
-  STOPPED,
-  SHUTDOWN
-} State;
+  MESSAGE_EXIT_SHELL,
+  MESSAGE_SHUTDOWN_SHELL
+} ShellMessage;
 
 #endif
