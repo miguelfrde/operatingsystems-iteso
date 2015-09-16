@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/wait.h>
+
+#include "lib/program_state.h"
 
 int main() {
   int pid;
@@ -17,11 +20,18 @@ int main() {
 
   while(1) {
     wait(&status);
-    pid = fork();
-    if(pid == 0) {
-      execlp("xterm", "xterm -e", "./getty", NULL);
+    return 0;
+    if(status == MESSAGE_SHUTDOWN_SHELL){
+      printf("recieved shutdown \n");
+      exit(0);
     }
+    else{
+      pid = fork();
+      if(pid == 0) {
+        execlp("xterm", "xterm -e", "./getty", NULL);
+      }
+    }
+    
   }
 
-  return 0;
 }
