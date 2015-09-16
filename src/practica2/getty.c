@@ -4,7 +4,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#include "lib/program_state.h"
+
 const char* fileRoot = "passwd";
+
+
 
 void cleanInput(char* str) {
   int last_index = strlen(str) - 1;
@@ -20,6 +24,9 @@ int main(int argc, char* argv[]){
 
   // Process ID var
   int pid;
+
+  // Process status
+  int status;
 
   // Declaring variables to split each line of our file with a Comma
   char lineIterator[64];
@@ -80,10 +87,17 @@ int main(int argc, char* argv[]){
 
   if (pid == 0) {
     // Replace with SH process
-    // execlp("nice","nice","--adjustment=0","./cpuyes",spcpu,0);
+    execl("sh", "sh", NULL);
   } else {
-    wait(NULL);
-    // TODO re-prompt
+    wait(&status);
+    if(WIFEXITED(status)){
+      if(status == MESSAGE_SHUTDOWN_SHELL){
+        exit(MESSAGE_SHUTDOWN_SHELL);
+      }
+      else
+        exit(MESSAGE_EXIT_SHELL);
+    } 
+  
   }
 
   return 0;
