@@ -35,11 +35,10 @@ void ll_insert(LinkedList* list, char* value) {
   // append it to the list.
   if (list->first) {
     list->last->next = node;
-    list->last = node;
   } else {
     list->first = node;
-    list->last = node;
   }
+  list->last = node;
 
   list->size++;
 }
