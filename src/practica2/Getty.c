@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-const char* fileRoot = "../../Hello.txt";
+const char* fileRoot = "passwd";
 
 void cleanInput(char* str) {
   int last_index = strlen(str) - 1;
