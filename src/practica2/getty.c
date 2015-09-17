@@ -87,15 +87,19 @@ int main(int argc, char* argv[]){
 
   if (pid == 0) {
     // Replace with SH process
-    execle("sh", "sh", NULL);
+    execl("sh", "sh", NULL);
   } else {
     wait(&status);
-      if(status == MESSAGE_SHUTDOWN_SHELL){
+    if(WIFEXITED(status)){
+      if(WEXITSTATUS(status) == MESSAGE_SHUTDOWN_SHELL){
         exit(MESSAGE_SHUTDOWN_SHELL);
       }
       else
         exit(MESSAGE_EXIT_SHELL);
     } 
+    
+  
+  
+  }
 
-  return 0;
 }
