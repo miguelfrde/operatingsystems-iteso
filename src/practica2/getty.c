@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
   if (authorized(credentials)) {
     pid = fork();
     if (pid == 0) {
-      execlp("xterm", "xterm -e", "./sh", NULL);
+      execlp("./sh", "");
     } else {
       wait(&status);
     }
@@ -95,7 +95,6 @@ bool authorized(Credentials given) {
     if (strcmp(given.username, expected.username) == 0 &&
         strcmp(given.password, expected.password) == 0) {
       printf("Successful login!\n");
-      sleep(3);
       fclose(fp);
       return true;
     }
