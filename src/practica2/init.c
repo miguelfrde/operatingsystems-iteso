@@ -30,9 +30,11 @@ int main() {
           break;
       }
       else{
+        i =0;
         child[i] = fork();
         if(child[i] == 0) {
           execlp("xterm", "xterm -e", "./getty", NULL);
+
         }
       }
 
