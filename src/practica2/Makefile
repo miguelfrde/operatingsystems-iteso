@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -O0 -g -Wall -Werror -std=c99
+CFLAGS := -O0 -g -Wall -std=c99
 LIB_DIR := lib
 
 SH_SRC := sh.c lib/linkedlist.c lib/sh_input.c

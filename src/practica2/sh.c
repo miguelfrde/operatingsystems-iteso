@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #include "lib/linkedlist.h"
 #include "lib/program_state.h"
@@ -14,10 +17,17 @@ typedef struct {
   void (*callback)(LinkedList args);
 } CommandCallback;
 
+typedef struct {
+  LinkedList key;
+  LinkedList value;
+} EnvironmentMap;
+
 /* Prototypes */
 
 void execute_command(Command);
 void change_env_vars_by_its_value(LinkedList*);
+void substitute_string(char*, char*, int, int);
+bool is_valid_env_char(char);
 void execute_path_program(Command);
 void callback_shutdown(LinkedList);
 void callback_exit(LinkedList);
@@ -57,12 +67,51 @@ int main(int argc, char* argv[]) {
 void change_env_vars_by_its_value(LinkedList* args) {
   LinkedListNode* arg;
   for (arg = args->first; arg; arg = arg->next) {
-    if (arg->value[0] == '$') {
-      // Env var found, remove the dollar sign and find it in the env
-      char* env_val = getenv(arg->value + 1);
-      strcpy(arg->value, env_val);
+    for (int i = 0; i < strlen(arg->value); i++) {
+      if (arg->value[i] == '$') {
+        char env_var[MAX_BUFFER_LEN];
+        char* env_var_value;
+        int j = i + 1;
+
+        // Advance the index until the whole env var name is found
+        while (is_valid_env_char(arg->value[j])) j++;
+        strncpy(env_var, arg->value + i + 1, j - i - 1);
+        env_var[j - i - 1] = '\0';
+
+        // Get the env var value and substitute its $NAME by it
+        env_var_value = getenv(env_var);
+        substitute_string(arg->value, env_var_value, i, j - 1);
+        if (env_var_value != NULL) {
+          i += strlen(env_var_value);
+        }
+      }
     }
   }
+}
+
+/**
+ * Returns true if an env var name can contain the given character
+ */
+bool is_valid_env_char(char c) {
+  return isdigit(c) || isalpha(c) || c == '_';
+}
+
+/**
+ * Replaces whatever is in the first string in the range [start, end]
+ * with the contents of the second argument
+ */
+void substitute_string(char* original, char* to_insert, int start, int end) {
+  char result[MAX_BUFFER_LEN];
+  strncpy(result, original, start);
+  result[start] = '\0';
+
+  // Just ignore that string if it doesn't contain anything
+  if (to_insert != NULL && strlen(to_insert) > 0) {
+    strcat(result, to_insert);
+  }
+
+  strcat(result, original + end + 1);
+  strcpy(original, result);
 }
 
 /**
@@ -84,13 +133,31 @@ void execute_command(Command command) {
  * Finds a program in the path and executes it
  */
 void execute_path_program(Command command) {
-  // TODO: real implementation
   LinkedListNode* arg;
-  printf("Execute %s with args: ", command.name);
-  for (arg = command.args.first; arg; arg = arg->next) {
-    printf("%s ", arg->value);
+  int i, pid, status;
+
+  // Put all args in an array, to be able to pass them to exec
+  char** args = (char**)calloc(command.args.size, sizeof(char*));
+  for (i = 0; i < command.args.size; i++) {
+    args[i] = (char*)calloc(MAX_BUFFER_LEN, sizeof(char));
   }
-  printf("\n");
+  for (i = 0, arg = command.args.first; arg; arg = arg->next, i++) {
+    strcpy(args[i], arg->value);
+  }
+
+  // Execute the given program
+  pid = fork();
+  if (pid == 0) {
+    execvp(command.name, args);
+  } else {
+    wait(&status);
+  }
+
+  // Deallocate memory assigned for the args
+  for (i = 0; i < command.args.size; i++) {
+    free(args[i]);
+  }
+  free(args);
 }
 
 /**
@@ -110,11 +177,30 @@ void callback_exit(LinkedList args) {
 }
 
 /**
- * set command, sets and environment variable
+ * set command, sets an environment variable
  */
 void callback_set(LinkedList args) {
-  // TODO: real implementation
-  printf("set called\n");
+  char* inputValues = args.first->value;
+  char* existantPath;
+
+  //Split the string into the variable and the value
+  char* splittedValues = strtok(inputValues , "=");
+  char* var = splittedValues;
+  char* value = strtok (NULL, "=");
+
+  if (value[0] == '$') {
+    value = value + 1;
+    splittedValues = strtok (value, ":");
+    existantPath = splittedValues;
+    splittedValues = strtok (NULL, ":");
+    value = splittedValues;
+    setenv(var, strcat(strcat(getenv(existantPath), ":"), value), 1);
+  }
+  else {
+    setenv(var, value, 1);
+  }
+
+  printf("New var %s: %s\n", var, getenv(var));
 }
 
 /**
