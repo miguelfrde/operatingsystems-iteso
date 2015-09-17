@@ -4,9 +4,59 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <stdbool.h>
 
+#define PASS_BUFFER_LEN 150
+
+/* Datatypes and prototypes */
+
+typedef struct Credentials {
+  char username[PASS_BUFFER_LEN];
+  char password[PASS_BUFFER_LEN];
+} Credentials;
+
+void cleanInput(char*);
+Credentials prompt_for_credentials();
+bool authorized(Credentials);
+
+// File where the valid credentials are stored
 const char* fileRoot = "passwd";
 
+int main(int argc, char* argv[]){
+  Credentials credentials;
+  int pid, status;
+
+  credentials = prompt_for_credentials();
+
+  if (authorized(credentials)) {
+    pid = fork();
+    if (pid == 0) {
+      execlp("xterm", "xterm -e", "./sh", NULL);
+    } else {
+      wait(&status);
+    }
+  }
+
+  return 0;
+}
+
+/**
+ * Asks the user for the username and password
+ */
+Credentials prompt_for_credentials() {
+  Credentials credentials;
+  printf("User:");
+  fgets(credentials.username, PASS_BUFFER_LEN, stdin);
+  printf("Password:");
+  fgets(credentials.password, PASS_BUFFER_LEN, stdin);
+  cleanInput(credentials.password);
+  cleanInput(credentials.username);
+  return credentials;
+}
+
+/**
+ * Remove breaklines from the string
+ */
 void cleanInput(char* str) {
   int last_index = strlen(str) - 1;
   if (str[last_index] == '\n' || str[last_index] == '\r') {
@@ -14,83 +64,47 @@ void cleanInput(char* str) {
   }
 }
 
-int main(int argc, char* argv[]){
-  // User and Password wrote in console
-  do{  
-    char user[64];
-    char password[64];  
+/**
+ * Checks if the given credentials are valid. They are
+ * valid if they are in the default file.
+ */
+bool authorized(Credentials given) {
+  Credentials expected;
+  char credentialsLine[PASS_BUFFER_LEN];
+  char *token;
+  FILE *fp;
 
-    // Process ID var
-    int pid;  
-    int status;
+  fp = fopen(fileRoot, "r");
 
-    // Declaring variables to split each line of our file with a Comma
-    char lineIterator[64];
-    char *cleanLine;       // Line after the clean up process
-    char *credentials[2];  // Credentials in the file
-    int i = 0;             // Iterator index  
+  if (fp == NULL) {
+    perror("Error while opening the file.\n");
+    return -1;
+  }
 
-    // Prompt for credentials
-    printf("User:");
-    scanf("%s", user);
-    printf("Password:");
-    scanf("%s", password);  
+  // Iterate each line of the file until it founds a match with the
+  // values given by the users
+  while (fgets(credentialsLine, PASS_BUFFER_LEN, fp)) {
+    cleanInput(credentialsLine);
 
-    // Declaring the root of our file in Read-Only Mode
-    FILE *fp;
-    fp = fopen(fileRoot, "r");  
+    // Split by commas
+    token = strtok(credentialsLine, ",");
+    strcpy(expected.username, token);
+    strcpy(expected.password, strtok(NULL, ","));
 
-    // If the file is empty, returns an error
-    if (fp == NULL) {
-      perror("Error while opening the file.\n");
-      return -1;
-    }  
-
-    /* While the loop has not reached the end of the file
-     The loop will iterate each line of the file until it founds a match with the
-     Values given by the users*/
-    while (!feof(fp)) {
-      // Read a line of the file and stores it on SingleLine var
-      fgets(lineIterator, 150, fp);  
-
-      // Removes trash characters
-      cleanInput(lineIterator);  
-
-      // When the line is clean, splits it with the comma
-      cleanLine = strtok(lineIterator, ",");  
-
-      // Split process (Credits: StackOverflow)
-      while (cleanLine!=NULL) {
-        credentials[i++] = cleanLine;
-        cleanLine = strtok (NULL, ",");
-      }  
-
-      i = 0;
-      // If user wrote in console is equals to user in the file
-      if (strcmp(user, credentials[0]) == 0 && strcmp(password, credentials[1]) == 0) {
-        // If password wrote in console is equals to password in the file
-        puts("Successful login");
-        printf("doing re-image...");
-        break;
-      }
-      else{
-        puts("Authentication failed");
-        sleep(3);
-        return -1;
-      }
-    }  
-
-    fclose(fp);  
-
-    pid = fork();  
-
-    if (pid == 0) {
-      // Replace with SH process
-      execlp("xterm", "xterm -e", "./sh", NULL);
-    } else {
-      wait(&status);
+    // Check if both the username and the password are the same
+    if (strcmp(given.username, expected.username) == 0 &&
+        strcmp(given.password, expected.password) == 0) {
+      printf("Successful login!\n");
+      sleep(3);
+      fclose(fp);
+      return true;
     }
-  }while(1);
+  }
 
-  return 0;
+  fclose(fp);
+
+  printf("Authentication failed\n");
+  sleep(3);
+
+  return false;
 }
