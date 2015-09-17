@@ -42,13 +42,11 @@ int main(int argc, char* argv[]){
       execl("sh", "sh", NULL);
     } else {
       wait(&status);
-      if(WIFEXITED(status)){
-        if(WEXITSTATUS(status) == MESSAGE_SHUTDOWN_SHELL){
-          kill(getppid(),SIGINT);
-          exit(MESSAGE_SHUTDOWN_SHELL);
+      if (WIFEXITED(status)){
+        if (WEXITSTATUS(status) == MESSAGE_SHUTDOWN_SHELL){
+          kill(getppid(), SIGINT);
         }
-        else
-          exit(MESSAGE_EXIT_SHELL);
+        exit(WEXITSTATUS(status));
       }
     }
   }
