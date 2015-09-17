@@ -13,6 +13,7 @@ int main() {
   int pid;
   int i;
   int status;
+  int child[6]; //array that holds the pid of child processes
   // Creates 6 procesess and replaces them with getty
   for (i = 0; i < 6; ++i) {
     pid = fork();
@@ -21,21 +22,26 @@ int main() {
     }
   }
 
-  while(1) {
-    wait(&status);
+  for(i = 0; i < 6; ++i) {
+    child[i]=wait(&status);
     if(WIFEXITED(status)){
       if(WEXITSTATUS(status) == SIGINT){
           printf("shutdown recieved");
-          return 0;
+          break;
       }
       else{
-        pid = fork();
-        if(pid == 0) {
+        child[i] = fork();
+        if(child[i] == 0) {
           execlp("xterm", "xterm -e", "./getty", NULL);
         }
       }
 
     }
   }
+
+  for(i = 0; i < 6; ++i){
+    kill(child[i], SIGINT);
+  }
+  return 0;
 
 }
