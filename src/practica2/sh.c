@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +14,11 @@ typedef struct {
   char* command_name;
   void (*callback)(LinkedList args);
 } CommandCallback;
+
+typedef struct {
+  LinkedList key;
+  LinkedList value;
+} EnvironmentMap;
 
 /* Prototypes */
 
@@ -110,11 +116,37 @@ void callback_exit(LinkedList args) {
 }
 
 /**
- * set command, sets and environment variable
+ * set command, sets an environment variable
  */
 void callback_set(LinkedList args) {
-  // TODO: real implementation
-  printf("set called\n");
+  char* inputValues = args.first->value;
+  char* existantPath;
+
+  //Split the string into the variable and the valie
+  char* splittedValues = strtok(inputValues , "=");
+
+  //Sets the setVariable
+  char* var = splittedValues;
+
+  //Iterate to the next string of the split
+  splittedValues = strtok (NULL, "=");
+
+  //Sets the value of the setVariable
+  char* value = splittedValues;
+  //printf("%s %s \n", var, value);
+  if(value[0]=='$'){
+    value=value+1;
+    splittedValues = strtok (value, ":");
+    existantPath = splittedValues;
+    splittedValues = strtok (NULL, ":");
+    value = splittedValues;
+    setenv(var, strcat(strcat(getenv(existantPath),":"),value), 1);
+  }
+  else{
+    setenv(var, value, 1);
+  }
+
+  printf("New var %s: %s\n", var, getenv(var));
 }
 
 /**
