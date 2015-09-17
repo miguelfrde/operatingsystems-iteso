@@ -1,9 +1,10 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #include "lib/linkedlist.h"
 #include "lib/program_state.h"
@@ -132,13 +133,25 @@ void execute_command(Command command) {
  * Finds a program in the path and executes it
  */
 void execute_path_program(Command command) {
-  // TODO: real implementation
   LinkedListNode* arg;
-  printf("Execute %s with args: ", command.name);
-  for (arg = command.args.first; arg; arg = arg->next) {
-    printf("%s ", arg->value);
+  int i, pid, status;
+
+  // Put all args in an array, to be able to pass them to exec
+  char** args = (char**)calloc(command.args.size, sizeof(char*));
+  for (i = 0; i < command.args.size; i++) {
+    args[i] = (char*)calloc(MAX_BUFFER_LEN, sizeof(char));
   }
-  printf("\n");
+  for (i = 0, arg = command.args.first; arg; arg = arg->next, i++) {
+    strcpy(args[i], arg->value);
+  }
+
+  // Execute the given program
+  pid = fork();
+  if (pid == 0) {
+    execvp(command.name, args);
+  } else {
+    wait(&status);
+  }
 }
 
 /**
