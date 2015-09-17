@@ -4,49 +4,44 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
-#include <sys/wait.h>  
+#include <sys/wait.h>
 
 
 #include "lib/program_state.h"
 
+void launch_getty();
+
 int main() {
-  int pid;
-  int i;
   int status;
 
   // Creates 6 procesess and replaces them with getty
-  for (i = 0; i < 6; ++i) {
-    pid = fork();
-    if (pid == 0) {
-      execlp("xterm", "xterm -e", "./getty", NULL);
-    }
+  for (int i = 0; i < 6; ++i) {
+    launch_getty();
   }
 
 
   while(1) {
     wait(&status);
-    if(WIFEXITED(status)){
+    if (WIFEXITED(status)) {
       // If the status is the shutdown signal(SIGINT), stop the program
       // Otherwise create a new process
-      if(WEXITSTATUS(status) == SIGINT){
+      if (WEXITSTATUS(status) == SIGINT) {
           printf("shutdown recieved");
           break;
+      } else {
+        launch_getty();
       }
-      else{
-        
-        if(fork() == 0) {
-          execlp("xterm", "xterm -e", "./getty", NULL);
-
-        }
-  
-      }
-
     }
   }
 
   // Kill all the processes that belongs to the parent process group
-  kill(0,SIGINT);  
+  kill(0,SIGINT);
   return 0;
-
 }
 
+// Launches a new getty process
+void launch_getty() {
+  if (fork() == 0) {
+    execlp("xterm", "xterm -e", "./getty", NULL);
+  }
+}
