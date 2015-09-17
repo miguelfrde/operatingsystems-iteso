@@ -152,6 +152,12 @@ void execute_path_program(Command command) {
   } else {
     wait(&status);
   }
+
+  // Deallocate memory assigned for the args
+  for (i = 0; i < command.args.size; i++) {
+    free(args[i]);
+  }
+  free(args);
 }
 
 /**
