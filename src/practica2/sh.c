@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #include "lib/linkedlist.h"
 #include "lib/program_state.h"
@@ -24,6 +25,8 @@ typedef struct {
 
 void execute_command(Command);
 void change_env_vars_by_its_value(LinkedList*);
+void substitute_string(char*, char*, int, int);
+bool is_valid_env_char(char);
 void execute_path_program(Command);
 void callback_shutdown(LinkedList);
 void callback_exit(LinkedList);
@@ -63,12 +66,51 @@ int main(int argc, char* argv[]) {
 void change_env_vars_by_its_value(LinkedList* args) {
   LinkedListNode* arg;
   for (arg = args->first; arg; arg = arg->next) {
-    if (arg->value[0] == '$') {
-      // Env var found, remove the dollar sign and find it in the env
-      char* env_val = getenv(arg->value + 1);
-      strcpy(arg->value, env_val);
+    for (int i = 0; i < strlen(arg->value); i++) {
+      if (arg->value[i] == '$') {
+        char env_var[MAX_BUFFER_LEN];
+        char* env_var_value;
+        int j = i + 1;
+
+        // Advance the index until the whole env var name is found
+        while (is_valid_env_char(arg->value[j])) j++;
+        strncpy(env_var, arg->value + i + 1, j - i - 1);
+        env_var[j - i - 1] = '\0';
+
+        // Get the env var value and substitute its $NAME by it
+        env_var_value = getenv(env_var);
+        substitute_string(arg->value, env_var_value, i, j - 1);
+        if (env_var_value != NULL) {
+          i += strlen(env_var_value);
+        }
+      }
     }
   }
+}
+
+/**
+ * Returns true if an env var name can contain the given character
+ */
+bool is_valid_env_char(char c) {
+  return isdigit(c) || isalpha(c) || c == '_';
+}
+
+/**
+ * Replaces whatever is in the first string in the range [start, end]
+ * with the contents of the second argument
+ */
+void substitute_string(char* original, char* to_insert, int start, int end) {
+  char result[MAX_BUFFER_LEN];
+  strncpy(result, original, start);
+  result[start] = '\0';
+
+  // Just ignore that string if it doesn't contain anything
+  if (to_insert != NULL && strlen(to_insert) > 0) {
+    strcat(result, to_insert);
+  }
+
+  strcat(result, original + end + 1);
+  strcpy(original, result);
 }
 
 /**
@@ -122,27 +164,20 @@ void callback_set(LinkedList args) {
   char* inputValues = args.first->value;
   char* existantPath;
 
-  //Split the string into the variable and the valie
+  //Split the string into the variable and the value
   char* splittedValues = strtok(inputValues , "=");
-
-  //Sets the setVariable
   char* var = splittedValues;
+  char* value = strtok (NULL, "=");
 
-  //Iterate to the next string of the split
-  splittedValues = strtok (NULL, "=");
-
-  //Sets the value of the setVariable
-  char* value = splittedValues;
-  //printf("%s %s \n", var, value);
-  if(value[0]=='$'){
-    value=value+1;
+  if (value[0] == '$') {
+    value = value + 1;
     splittedValues = strtok (value, ":");
     existantPath = splittedValues;
     splittedValues = strtok (NULL, ":");
     value = splittedValues;
-    setenv(var, strcat(strcat(getenv(existantPath),":"),value), 1);
+    setenv(var, strcat(strcat(getenv(existantPath), ":"), value), 1);
   }
-  else{
+  else {
     setenv(var, value, 1);
   }
 

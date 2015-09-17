@@ -28,7 +28,6 @@ void ll_insert(LinkedList* list, char* value) {
   // Allocate memory for the new node to insert
   LinkedListNode* node = (LinkedListNode*)calloc(1, sizeof(LinkedListNode));
   node->next = NULL;
-  node->value = (char*)calloc(1, sizeof(value));
   strcpy(node->value, value);
 
   // If the linked list is empty, insert it in the first position, if not
@@ -71,7 +70,6 @@ char* ll_pop_first(LinkedList* list) {
   char* first_value = (char*)calloc(1, sizeof(list->first->value));
   LinkedListNode* next = list->first->next;
   strcpy(first_value, list->first->value);
-  free(list->first->value);
   free(list->first);
   list->first = next;
   list->size--;

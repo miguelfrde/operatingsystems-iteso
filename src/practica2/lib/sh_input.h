@@ -1,6 +1,6 @@
 #include "linkedlist.h"
 
-#define MAX_BUFFER_LEN 100
+#define MAX_BUFFER_LEN 1000
 
 typedef struct {
   char name[MAX_BUFFER_LEN];
