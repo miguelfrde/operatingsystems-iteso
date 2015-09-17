@@ -1,8 +1,11 @@
+#define _POSIX_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <signal.h>
 #include <unistd.h>
-#include <sys/wait.h>
+#include <sys/wait.h>  
 
 #include "lib/program_state.h"
 
@@ -92,6 +95,7 @@ int main(int argc, char* argv[]){
     wait(&status);
     if(WIFEXITED(status)){
       if(WEXITSTATUS(status) == MESSAGE_SHUTDOWN_SHELL){
+        kill(getppid(),SIGINT);
         exit(MESSAGE_SHUTDOWN_SHELL);
       }
       else
