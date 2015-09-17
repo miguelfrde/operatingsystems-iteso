@@ -1,10 +1,15 @@
+#define _POSIX_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <stdbool.h>
+
+#include "lib/program_state.h"
 
 #define PASS_BUFFER_LEN 150
 
@@ -29,11 +34,22 @@ int main(int argc, char* argv[]){
   credentials = prompt_for_credentials();
 
   if (authorized(credentials)) {
+
     pid = fork();
+
     if (pid == 0) {
-      execlp("./sh", "");
+      // Replace with SH process
+      execl("sh", "sh", NULL);
     } else {
       wait(&status);
+      if(WIFEXITED(status)){
+        if(WEXITSTATUS(status) == MESSAGE_SHUTDOWN_SHELL){
+          kill(getppid(),SIGINT);
+          exit(MESSAGE_SHUTDOWN_SHELL);
+        }
+        else
+          exit(MESSAGE_EXIT_SHELL);
+      }
     }
   }
 
