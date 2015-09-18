@@ -135,21 +135,29 @@ void execute_command(Command command) {
 void execute_path_program(Command command) {
   LinkedListNode* arg;
   int i, pid, status;
+  bool is_bg_call = strcmp(command.args.last->value, "&") == 0;
 
+  printf("%d\n", is_bg_call);
   // Put all args in an array, to be able to pass them to exec
   char** args = (char**)calloc(command.args.size + 2, sizeof(char*));
   for (i = 1, arg = command.args.first; arg; arg = arg->next, i++) {
+    // If the last argument is "&" ignore it as arg
+    if (is_bg_call && arg == command.args.last) {
+      continue;
+    }
     args[i] = arg->value;
   }
 
   args[0] = command.name;
 
-  // Execute the given program
   pid = fork();
   if (pid == 0) {
     execvp(command.name, args);
   } else {
-    wait(&status);
+    // If it's a background call don't wait for the child to finish
+    if (!is_bg_call) {
+      wait(&status);
+    }
   }
 
   free(args);
