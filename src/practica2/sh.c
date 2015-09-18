@@ -137,13 +137,12 @@ void execute_path_program(Command command) {
   int i, pid, status;
 
   // Put all args in an array, to be able to pass them to exec
-  char** args = (char**)calloc(command.args.size, sizeof(char*));
-  for (i = 0; i < command.args.size; i++) {
-    args[i] = (char*)calloc(MAX_BUFFER_LEN, sizeof(char));
+  char** args = (char**)calloc(command.args.size + 2, sizeof(char*));
+  for (i = 1, arg = command.args.first; arg; arg = arg->next, i++) {
+    args[i] = arg->value;
   }
-  for (i = 0, arg = command.args.first; arg; arg = arg->next, i++) {
-    strcpy(args[i], arg->value);
-  }
+
+  args[0] = command.name;
 
   // Execute the given program
   pid = fork();
@@ -153,10 +152,6 @@ void execute_path_program(Command command) {
     wait(&status);
   }
 
-  // Deallocate memory assigned for the args
-  for (i = 0; i < command.args.size; i++) {
-    free(args[i]);
-  }
   free(args);
 }
 
