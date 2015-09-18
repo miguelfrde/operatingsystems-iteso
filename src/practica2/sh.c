@@ -149,7 +149,7 @@ void execute_command(Command command) {
  */
 void execute_path_program(Command command) {
   LinkedListNode* arg;
-  int i, status;
+  int i, pid, status;
   bool is_bg_call = strcmp(command.args.last->value, "&") == 0;
 
   // Put all args in an array, to be able to pass them to exec
@@ -164,13 +164,14 @@ void execute_path_program(Command command) {
 
   args[0] = command.name;
 
-  if (fork() == 0) {
+  pid = fork();
+  if (pid == 0) {
     execvp(command.name, args);
     exit(3);
   } else {
     // If it's a background call don't wait for the child to finish
     if (!is_bg_call) {
-      wait(&status);
+      waitpid(pid, &status, 0);
       if (WIFEXITED(status) && WEXITSTATUS(status) == 3) {
         printf("Command not found\n");
       }
