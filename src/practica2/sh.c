@@ -26,6 +26,7 @@ typedef struct {
 
 void execute_command(Command);
 void change_env_vars_by_its_value(LinkedList*);
+void change_env_var_as_command_name(char*);
 void substitute_string(char*, char*, int, int);
 bool is_valid_env_char(char);
 void execute_path_program(Command);
@@ -53,11 +54,24 @@ int main(int argc, char* argv[]) {
     read_successful = parse_input(raw_input, &command);
     if (read_successful) {
       change_env_vars_by_its_value(&command.args);
+      change_env_var_as_command_name(command.name);
       execute_command(command);
     }
   }
 
   return 0;
+}
+
+/**
+ * Changes a string by the value of the env var related to it
+ */
+void change_env_var_as_command_name(char* command_name) {
+  // If its an env var
+  if (command_name[0] == '$') {
+    char* env_value = getenv(command_name + 1);
+    strcpy(command_name, env_value);
+    command_name[strlen(env_value)] = '\0';
+  }
 }
 
 /**
@@ -137,7 +151,6 @@ void execute_path_program(Command command) {
   int i, pid, status;
   bool is_bg_call = strcmp(command.args.last->value, "&") == 0;
 
-  printf("%d\n", is_bg_call);
   // Put all args in an array, to be able to pass them to exec
   char** args = (char**)calloc(command.args.size + 2, sizeof(char*));
   for (i = 1, arg = command.args.first; arg; arg = arg->next, i++) {
