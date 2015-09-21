@@ -110,36 +110,36 @@ unsigned char black_and_white(Pixel p) {
   return (unsigned char) (0.3*red + 0.59*green + 0.11*blue);
 }
 
-void process_bmp(Image *imagefte, Image *imagedst) {
+void process_bmp(Image *imagesrc, Image *imagedst) {
   int image_rows, image_cols;
-  Pixel *pfte, *pdst, *v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7;
+  Pixel *psrc, *pdst, *v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7;
 
-  memcpy(imagedst, imagefte, sizeof(Image) - sizeof(Pixel*));
-  image_rows = imagefte->infoheader.rows;
-  image_cols = imagefte->infoheader.cols;
+  memcpy(imagedst, imagesrc, sizeof(Image) - sizeof(Pixel*));
+  image_rows = imagesrc->infoheader.rows;
+  image_cols = imagesrc->infoheader.cols;
   imagedst->pixel = (Pixel *)malloc(sizeof(Pixel) * image_rows * image_cols);
 
   for (int i = 1; i < image_rows - 1; i++) {
     for (int j = 1; j < image_cols - 1; j++) {
-      pfte = imagefte->pixel + image_cols*i + j;
-      v0 = pfte - image_cols - 1;
-      v1 = pfte - image_cols;
-      v2 = pfte - image_cols + 1;
-      v3 = pfte - 1;
-      v4 = pfte + 1;
-      v5 = pfte + image_cols - 1;
-      v6 = pfte + image_cols;
-      v7 = pfte + image_cols + 1;
+      psrc = imagesrc->pixel + image_cols*i + j;
+      v0 = psrc - image_cols - 1;
+      v1 = psrc - image_cols;
+      v2 = psrc - image_cols + 1;
+      v3 = psrc - 1;
+      v4 = psrc + 1;
+      v5 = psrc + image_cols - 1;
+      v6 = psrc + image_cols;
+      v7 = psrc + image_cols + 1;
 
       pdst = imagedst->pixel + image_cols*i + j;
-      if (abs(black_and_white(*pfte) - black_and_white(*v0)) > DIF ||
-          abs(black_and_white(*pfte) - black_and_white(*v1)) > DIF ||
-          abs(black_and_white(*pfte) - black_and_white(*v2)) > DIF ||
-          abs(black_and_white(*pfte) - black_and_white(*v3)) > DIF ||
-          abs(black_and_white(*pfte) - black_and_white(*v4)) > DIF ||
-          abs(black_and_white(*pfte) - black_and_white(*v5)) > DIF ||
-          abs(black_and_white(*pfte) - black_and_white(*v6)) > DIF ||
-          abs(black_and_white(*pfte) - black_and_white(*v7)) > DIF) {
+      if (abs(black_and_white(*psrc) - black_and_white(*v0)) > DIF ||
+          abs(black_and_white(*psrc) - black_and_white(*v1)) > DIF ||
+          abs(black_and_white(*psrc) - black_and_white(*v2)) > DIF ||
+          abs(black_and_white(*psrc) - black_and_white(*v3)) > DIF ||
+          abs(black_and_white(*psrc) - black_and_white(*v4)) > DIF ||
+          abs(black_and_white(*psrc) - black_and_white(*v5)) > DIF ||
+          abs(black_and_white(*psrc) - black_and_white(*v6)) > DIF ||
+          abs(black_and_white(*psrc) - black_and_white(*v7)) > DIF) {
         pdst->red = 0;
         pdst->green = 0;
         pdst->blue = 0;
