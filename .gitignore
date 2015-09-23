@@ -29,17 +29,19 @@
 *.i*86
 *.x86_64
 *.hex
-main
 src/practica2/sh
 *.c~
 
 
 #binaries
+main
 dummygetty
 init
 Getty
 getty
-Getty.c~
+main_pthreads
+main_clone
+main_just_cache
 
 # Debug files
 *.dSYM/
