@@ -27,4 +27,4 @@ main_just_cache: main_just_cache.o
 
 .PHONY: clean
 clean:
-	rm -f *.o lib/*.o *~ $(MAIN)
+	rm -f *.o lib/*.o *~ $(MAINS)
