@@ -7,9 +7,6 @@
 #define DIF 16
 #define NUM_THREADS 4
 
-// File top process
-char filename[] = "imagen2.bmp";
-
 #pragma pack(2)  // 2 bytes packaging
 typedef struct {
   unsigned char magic1;
@@ -157,9 +154,10 @@ void* process_bmp(void* arg) {
   pthread_exit(NULL);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   int res, image_rows, image_cols;
   char namedest[80];
+  char filename[80];
   long long start_ts;
   long long stop_ts;
   long long elapsed_time;
@@ -170,6 +168,12 @@ int main() {
   gettimeofday(&ts, NULL);
   start_ts = ts.tv_sec * 1000000 + ts.tv_usec; // Initial time
 
+  if (argc < 2) {
+    printf("Usage: ./main filename\n");
+    exit(-1);
+  }
+
+  strcpy(filename, argv[1]);
   strcpy(namedest, strtok(filename, "."));
   strcat(filename, ".bmp");
   strcat(namedest, "_P.bmp");
