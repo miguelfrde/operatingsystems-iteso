@@ -6,7 +6,7 @@
 #define DIF 16
 
 // File top process
-char filename[] = "/home/usuario/imagen.bmp";
+char filename[] = "imagen2.bmp";
 
 #pragma pack(2)  // 2 bytes packaging
 typedef struct {

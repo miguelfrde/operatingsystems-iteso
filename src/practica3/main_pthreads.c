@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #define DIF 16
+#define NUM_THREADS 4
 
 // File top process
-char filename[] = "/home/usuario/imagen.bmp";
+char filename[] = "imagen2.bmp";
 
 #pragma pack(2)  // 2 bytes packaging
 typedef struct {
@@ -110,18 +112,20 @@ unsigned char black_and_white(Pixel p) {
   return (unsigned char) (0.3*red + 0.59*green + 0.11*blue);
 }
 
-void process_bmp(Image *imagesrc, Image *imagedst) {
+void* process_bmp(void* arg) {
   int image_rows, image_cols;
+  int thread_id = *((int*)arg);
   Pixel *psrc, *pdst, *v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7;
 
-  memcpy(imagedst, imagesrc, sizeof(Image) - sizeof(Pixel*));
-  image_rows = imagesrc->infoheader.rows;
-  image_cols = imagesrc->infoheader.cols;
-  imagedst->pixel = (Pixel *)malloc(sizeof(Pixel) * image_rows * image_cols);
+  image_rows = source_image.infoheader.rows;
+  image_cols = source_image.infoheader.cols;
 
   for (int i = 1; i < image_rows - 1; i++) {
     for (int j = 1; j < image_cols - 1; j++) {
-      psrc = imagesrc->pixel + image_cols*i + j;
+      if ((i * (image_rows - 1) + j) % NUM_THREADS != thread_id) {
+        continue;
+      }
+      psrc = source_image.pixel + image_cols*i + j;
       v0 = psrc - image_cols - 1;
       v1 = psrc - image_cols;
       v2 = psrc - image_cols + 1;
@@ -131,7 +135,7 @@ void process_bmp(Image *imagesrc, Image *imagedst) {
       v6 = psrc + image_cols;
       v7 = psrc + image_cols + 1;
 
-      pdst = imagedst->pixel + image_cols*i + j;
+      pdst = dest_image.pixel + image_cols*i + j;
       if (abs(black_and_white(*psrc) - black_and_white(*v0)) > DIF ||
           abs(black_and_white(*psrc) - black_and_white(*v1)) > DIF ||
           abs(black_and_white(*psrc) - black_and_white(*v2)) > DIF ||
@@ -150,14 +154,17 @@ void process_bmp(Image *imagesrc, Image *imagedst) {
       }
     }
   }
+  pthread_exit(NULL);
 }
 
 int main() {
-  int res;
+  int res, image_rows, image_cols;
   char namedest[80];
   long long start_ts;
   long long stop_ts;
   long long elapsed_time;
+  pthread_t threads[NUM_THREADS];
+  int thread_ids[NUM_THREADS];
   struct timeval ts;
 
   gettimeofday(&ts, NULL);
@@ -176,11 +183,26 @@ int main() {
     exit(1);
   }
 
-  printf("Processing image with %d rows and %d columns\n",
-      source_image.infoheader.rows, source_image.infoheader.cols);
+  image_rows = source_image.infoheader.rows;
+  image_cols = source_image.infoheader.cols;
 
-  process_bmp(&source_image, &dest_image);
-  res=save_bmp(namedest, &dest_image);
+  printf("Processing image with %d rows and %d columns\n",
+      image_rows, image_cols);
+
+  // Initialize destination image
+  memcpy(&dest_image, &source_image, sizeof(Image) - sizeof(Pixel*));
+  dest_image.pixel = (Pixel *)malloc(sizeof(Pixel) * image_rows * image_cols);
+
+  for (int i = 0; i < NUM_THREADS; i++) {
+    thread_ids[i] = i;
+    pthread_create(&threads[i], NULL, process_bmp, (void*)&thread_ids[i]);
+  }
+
+  for (int i = 0; i < NUM_THREADS; i++) {
+    pthread_join(threads[i], NULL);
+  }
+
+  res = save_bmp(namedest, &dest_image);
 
   if (res == -1) {
     fprintf(stderr,"Error when writting the image\n");
