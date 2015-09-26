@@ -49,3 +49,5 @@ main_just_cache
 # Other
 src/practica1/
 src/bookexercises/
+
+*.bmp
