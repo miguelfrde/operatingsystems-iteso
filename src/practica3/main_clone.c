@@ -1,4 +1,4 @@
-#define _GNU_SOURCE           
+#define _GNU_SOURCE
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 
 #define DIF 16
 #define NUM_THREADS 4
-#define STACK_SIZE (1024*12600) 
+#define STACK_SIZE (1024*12600)
 
 
 #pragma pack(2)  // 2 bytes packaging
@@ -125,7 +125,7 @@ int process_bmp(void* arg) {
 
   image_rows = source_image.infoheader.rows;
   image_cols = source_image.infoheader.cols;
-  
+
   // printf("Image rows: %d Image cols: %d", image_rows, image_cols);
   for (int i = 1; i < image_rows - 1; i++) {
     for (int j = 1; j < image_cols - 1; j++) {
@@ -143,7 +143,7 @@ int process_bmp(void* arg) {
       v7 = psrc + image_cols + 1;
 
       pdst = dest_image.pixel + image_cols*i + j;
-      // printf("Pixel source red: %d\n", psrc->red);
+
       if (abs(black_and_white(*psrc) - black_and_white(*v0)) > DIF ||
           abs(black_and_white(*psrc) - black_and_white(*v1)) > DIF ||
           abs(black_and_white(*psrc) - black_and_white(*v2)) > DIF ||
@@ -173,11 +173,10 @@ int main(int argc, char* argv[]) {
   long long start_ts;
   long long stop_ts;
   long long elapsed_time;
-  //pthread_t threads[NUM_THREADS];
   int thread_ids[NUM_THREADS];
   struct timeval ts;
-  char *stack[3];
-  char *stackTop[3];
+  char *stack[NUM_THREADS];
+  char *stackTop[NUM_THREADS];
 
   gettimeofday(&ts, NULL);
   start_ts = ts.tv_sec * 1000000 + ts.tv_usec; // Initial time
@@ -211,12 +210,12 @@ int main(int argc, char* argv[]) {
   memcpy(&dest_image, &source_image, sizeof(Image) - sizeof(Pixel*));
   dest_image.pixel = (Pixel *)malloc(sizeof(Pixel) * image_rows * image_cols);
 
-  for(int i = 0; i < NUM_THREADS; i++){
-  stack[i] = malloc(STACK_SIZE);
-  if (stack == NULL)
-    return -1;
-  
-  stackTop[i] = stack[i] + STACK_SIZE;  /* Assume stack grows downward */
+  for (int i = 0; i < NUM_THREADS; i++) {
+    stack[i] = malloc(STACK_SIZE);
+    if (stack[i] == NULL) {
+      return -1;
+    }
+    stackTop[i] = stack[i] + STACK_SIZE;  /* Assume stack grows downwards */
   }
 
   for (int i = 0; i < NUM_THREADS; i++) {
@@ -224,7 +223,7 @@ int main(int argc, char* argv[]) {
     clone(process_bmp, stackTop[i], CLONE_VM | SIGCHLD , (void*)&thread_ids[i]);
   }
 
-  for(int i=0; i < NUM_THREADS; i++){
+  for (int i=0; i < NUM_THREADS; i++) {
     wait(NULL);
   }
 
