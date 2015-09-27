@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -O3 -g -Wall -std=c99 -Wno-unused-result
+CFLAGS := -O3 -g -Wall -Werror -std=c99 -Wno-unused-result
 LDFLAGS := -lpthread
 LIB_DIR := lib
 

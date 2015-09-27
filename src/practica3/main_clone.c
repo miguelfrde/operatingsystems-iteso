@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include <pthread.h>
 #include <sched.h>
 #include <signal.h>
@@ -115,7 +117,7 @@ unsigned char black_and_white(Pixel p) {
   return (unsigned char) (0.3*red + 0.59*green + 0.11*blue);
 }
 
-void* process_bmp(void* arg) {
+int process_bmp(void* arg) {
   //printf("Arrived the function");
   int image_rows, image_cols;
   int thread_id = *((int*)arg);
@@ -219,7 +221,7 @@ int main(int argc, char* argv[]) {
 
   for (int i = 0; i < NUM_THREADS; i++) {
     thread_ids[i] = i;
-    clone(process_bmp, (char*)stackTop[i], CLONE_VM | SIGCHLD , (void*)&thread_ids[i]);
+    clone(process_bmp, stackTop[i], CLONE_VM | SIGCHLD , (void*)&thread_ids[i]);
   }
 
   for(int i=0; i < NUM_THREADS; i++){
