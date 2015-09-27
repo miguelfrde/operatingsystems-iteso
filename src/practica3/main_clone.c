@@ -47,11 +47,6 @@ typedef struct {
   Pixel *pixel;
 } Image;
 
-typedef struct {
-  Image image;
-  int tid;
-} ThreadContext;
-
 Image source_image, dest_image;
 
 int load_bmp(char* filename, Image* image) {
@@ -226,7 +221,7 @@ int main(int argc, char* argv[]) {
     thread_ids[i] = i;
     clone(process_bmp, (char*)stackTop[i], CLONE_VM | SIGCHLD , (void*)&thread_ids[i]);
   }
-
+  
   wait(NULL);
 
   res = save_bmp(namedest, &dest_image);
