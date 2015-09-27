@@ -221,8 +221,10 @@ int main(int argc, char* argv[]) {
     thread_ids[i] = i;
     clone(process_bmp, (char*)stackTop[i], CLONE_VM | SIGCHLD , (void*)&thread_ids[i]);
   }
-  
-  wait(NULL);
+
+  for(int i=0; i < NUM_THREADS; i++){
+    wait(NULL);
+  }
 
   res = save_bmp(namedest, &dest_image);
 
