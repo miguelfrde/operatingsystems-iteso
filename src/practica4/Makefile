@@ -1,8 +1,8 @@
 ## all: fcfs rr proceso
-all: fcfs proceso 
+all: fcfs proceso
 
 fcfs: virtual_processor.o schedulerFCFS.c
-	gcc -o fcfs schedulerFCFS.c virtual_processor.o 
+	gcc -o fcfs schedulerFCFS.c virtual_processor.o
 
 proceso: proceso.c
 	gcc -o proceso proceso.c
