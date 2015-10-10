@@ -1,19 +1,17 @@
-## all: fcfs rr proceso
+CC := gcc
+CFLAGS := -g -Wall -Werror -std=c99 -Wno-unused-result
+
 all: fcfs proceso
 
 fcfs: virtual_processor.o schedulerFCFS.c
-	gcc -o fcfs schedulerFCFS.c virtual_processor.o
+	$(CC) $(CFLAGS) -o fcfs schedulerFCFS.c virtual_processor.o
 
 proceso: proceso.c
-	gcc -o proceso proceso.c
+	$(CC) $(CFLAGS) -o proceso proceso.c
 
 virtual_processor.o: virtual_processor.c virtual_processor.h
-	gcc -c virtual_processor.c
+	$(CC) $(CFLAGS) -c virtual_processor.c
 
-# rr: virtual_processor.o schedulerRR.c
-#	gcc -o rr schedulerRR.c virtual_processor.o
-
-
+.PHONY: clean
 clean:
-	rm fcfs
-#	rm rr
+	rm -f *.o *~ fcfs

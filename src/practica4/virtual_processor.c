@@ -2,7 +2,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "virtual_processor.h"
 
 #define VERSION "Virtual Processor versión: 6.0913.07\n"
@@ -27,7 +30,7 @@ FILE *fp;
 
 
 int main(int argc, char *argv[]) {
-    int res, p, pid, i, thrid, statval;
+    int p, pid, i, statval;
     char snumproc[5], soml[12], stcpu[5], stes[5];
 
     struct itimerval itimer, otimer;
@@ -233,10 +236,9 @@ long get_one_millisec_loop() {
     long long start_ts;
     long long stop_ts;
     long long elapsed_time;
-    long lElapsedTime;
     long cicles;
     struct timeval ts;
-    int i, j;
+    int i;
 
     gettimeofday(&ts, NULL);
     start_ts = ts.tv_sec * 1000000 + ts.tv_usec;
@@ -278,7 +280,8 @@ int sacar_de_cola(struct COLAPROC *q) {
 }
 
 int num_en_tabla(int pid) {
-    for (int i = 0; i < MAXPROC; i++) {
+    int i;
+    for (i = 0; i < MAXPROC; i++) {
         if (proceso[i].pid==pid) {
             break;
         }
