@@ -2,15 +2,18 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 int num_proc;
+
+int iocall(int);
 
 int main(int argc, char *argv[]) {
   long long start_ts;
   long long stop_ts;
   long long current_ts;
   long long elapsed_time;
-  long lElapsedTime;
   struct timeval ts, ti, tf;
   int i, j;
   int tes;
@@ -52,10 +55,8 @@ int main(int argc, char *argv[]) {
 }
 
 int iocall(int tes) {
-  int pidkernel, statval;
   FILE *fp;
 
-  pidkernel = getppid();
   // Llama a entrada y salida
   // usleep(500000);
   kill(getppid(), SIGUSR1);
