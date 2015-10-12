@@ -8,7 +8,7 @@ fcfs: virtual_processor.o schedulerFCFS.c
 	$(CC) $(CFLAGS) $(WARNINGS) -o fcfs schedulerFCFS.c virtual_processor.o
 
 mfq: virtual_processor.o schedulerMFQ.c
-	$(CC) $(CFLAGS) $(WARNINGS) -o mfq schedulerMFQ.c virtual_processor.o
+	$(CC) $(CFLAGS) $(WARNINGS) -o mfq schedulerMFQ.c virtual_processor.o -lm
 
 proceso: proceso.c
 	$(CC) $(CFLAGS) $(WARNINGS) -o proceso proceso.c
