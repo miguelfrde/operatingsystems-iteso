@@ -39,7 +39,7 @@ int scheduler(int evento) {
 
   if (evento == TIMER) {
     time_left--;
-    if (time_left == 0 && pars[1] != NINGUNO) {
+    if (time_left <= 0 && pars[1] != NINGUNO) {
       printf("Interrupcion del proceso por quantum\n");
       proceso[pars[1]].prioridad++;
       proceso[pars[1]].estado = LISTO;
@@ -47,6 +47,8 @@ int scheduler(int evento) {
       cambia_proceso = true;
     } else if (pars[1] != NINGUNO) {
       printf("Proceso %d continua con q=%d\n", pars[1], time_left);
+    } else if (pars[1] == NINGUNO) {
+      cambia_proceso = true;
     }
   }
 
@@ -63,7 +65,7 @@ int scheduler(int evento) {
   }
 
   if (evento == PROCESO_TERMINADO) {
-    printf("Termina el proceso %d", pars[0]);
+    printf("Termina el proceso %d\n", pars[0]);
     proceso[pars[0]].estado = TERMINADO;
     cambia_proceso = true;
   }

@@ -18,4 +18,4 @@ virtual_processor.o: virtual_processor.c virtual_processor.h
 
 .PHONY: clean
 clean:
-	rm -f *.o *~ fcfs proceso
+	rm -f *.o *~ fcfs mfq proceso
