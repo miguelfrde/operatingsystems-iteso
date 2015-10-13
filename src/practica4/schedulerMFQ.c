@@ -38,17 +38,17 @@ int scheduler(int evento) {
   }
 
   if (evento == TIMER) {
-    time_left--;
-    if (time_left <= 0 && pars[1] != NINGUNO) {
+    if (pars[1] == NINGUNO) {
+      cambia_proceso = true;
+    } else if (proceso[pars[1]].trestante == 0) {
       printf("Interrupcion del proceso por quantum\n");
       proceso[pars[1]].prioridad++;
       proceso[pars[1]].estado = LISTO;
       put_in_feedback_queue(pars[1]);
       cambia_proceso = true;
-    } else if (pars[1] != NINGUNO) {
-      printf("Proceso %d continua con q=%d\n", pars[1], time_left);
-    } else if (pars[1] == NINGUNO) {
-      cambia_proceso = true;
+    } else {
+      proceso[pars[1]].trestante--;
+      printf("Proceso %d continua con q=%d\n", pars[1], proceso[pars[1]].trestante);
     }
   }
 
@@ -76,7 +76,7 @@ int scheduler(int evento) {
       if (!cola_vacia(feedback_queue[i])) {
         prox_proceso_a_ejecutar = sacar_de_cola(&feedback_queue[i]);
         proceso[prox_proceso_a_ejecutar].estado = EJECUCION;
-        time_left = pow(2, i);
+        proceso[prox_proceso_a_ejecutar].trestante = 1;
         printf("Siguiente a ejcutar: %d (de la cola %d, q=%d)\n", prox_proceso_a_ejecutar, i, time_left);
         break;
       }
