@@ -29,6 +29,7 @@ struct COLAPROC {
   int cola[20];
   int ent;
   int sal;
+  int size;
 };
 
 void mete_a_cola(struct COLAPROC *q, int proceso);

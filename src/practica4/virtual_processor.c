@@ -124,8 +124,10 @@ int main(int argc, char *argv[]) {
   // Inicializa variabless
   listos.ent = 0;
   listos.sal = 0;
+  listos.size = 0;
   bloqueados.ent = 0;
   bloqueados.sal = 0;
+  bloqueados.size = 0;
   proceso_en_ejecucion = NINGUNO;
 
   // Inicia el timer
@@ -254,6 +256,7 @@ long get_one_millisec_loop() {
 void mete_a_cola(struct COLAPROC *q, int proceso) {
   q->cola[q->ent] = proceso;
   q->ent++;
+  q->size++;
   if (q->ent > 19) {
     q->ent = 0;
   }
@@ -271,6 +274,7 @@ int sacar_de_cola(struct COLAPROC *q) {
   int proceso;
   proceso = q->cola[q->sal];
   q->sal++;
+  q->size--;
   if (q->sal > 19) {
     q->sal = 0;
   }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include <limits.h>
 #include "virtual_processor.h"
 
 extern struct PROCESO proceso[];
@@ -48,30 +49,30 @@ int scheduler(int evento) {
   if (cambia_proceso) {
     if (!cola_vacia(listos)) {
     	int tmp_proc;
-    	int min = proceso[prox_proceso_a_ejecutar].trestante;
+    	int min = INT_MAX;
     	for(int i=0; i<queue_size(listos); i++){
     		tmp_proc = sacar_de_cola(&listos);
+    		if(proceso[tmp_proc].estado == TERMINADO){
+					continue;
+
+    		}    		
     		if(min > proceso[tmp_proc].trestante){
     			min = proceso[tmp_proc].trestante;
     			prox_proceso_a_ejecutar = tmp_proc;
     		}
-    		if(proceso[tmp_proc].estado != TERMINADO){
-					mete_a_cola(&listos, tmp_proc);
-    		}
+    		mete_a_cola(&listos, tmp_proc);
 
     	}
       proceso[prox_proceso_a_ejecutar].estado = EJECUCION;
       cambia_proceso = false;
     } else {
-      printf("Ho hay procesos en cola\n");
       prox_proceso_a_ejecutar = NINGUNO;
     }
   }
-
   return prox_proceso_a_ejecutar;
 }
 
 int queue_size(struct COLAPROC q){
-	return q.ent;
+	return q.size;
 }
 
