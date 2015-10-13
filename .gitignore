@@ -32,6 +32,8 @@
 src/practica2/sh
 src/practica4/fcfs
 src/practica4/proceso
+src/practica4/sjf
+src/practica4/mfq
 *.c~
 
 
