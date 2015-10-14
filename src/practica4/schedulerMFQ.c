@@ -67,7 +67,6 @@ int scheduler(int evento) {
   if (evento == PROCESO_TERMINADO) {
     printf("Termina el proceso %d\n", pars[0]);
     proceso[pars[0]].estado = TERMINADO;
-    cambia_proceso = true;
   }
 
   if (cambia_proceso) {
