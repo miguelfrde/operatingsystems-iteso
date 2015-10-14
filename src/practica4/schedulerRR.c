@@ -52,7 +52,7 @@ int scheduler(int evento) {
   if (evento == TERMINA_E_S) {
     // Saber cual proceso terminó E/S
     // pars0 es el proceso desbloqueado
-    proceso[pars[0]].estado = LISTO;
+    proceso[pars[0]].estado = EJECUCION;
     prox_proceso_a_ejecutar = pars[0];
     printf("Termina E/S Proceso desbloqueado %d\n", pars[0]);
   } 
