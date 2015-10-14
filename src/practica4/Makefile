@@ -2,7 +2,10 @@ CC := gcc
 CFLAGS := -g -std=c99 -D_POSIX_C_SOURCE=200809L
 WARNINGS := -Wall -Werror
 
-all: fcfs proceso
+all: fcfs proceso schedulerRR
+
+schedulerRR: virtual_processor.o schedulerRR.c
+	$(CC) $(CFLAGS) $(WARNINGS) -o schedulerRR schedulerRR.c virtual_processor.o
 
 fcfs: virtual_processor.o schedulerFCFS.c
 	$(CC) $(CFLAGS) $(WARNINGS) -o fcfs schedulerFCFS.c virtual_processor.o
