@@ -19,13 +19,12 @@ int scheduler(int evento) {
   if (evento == PROCESO_NUEVO) {
     proceso[pars[0]].estado = LISTO;
     mete_a_cola(&listos, pars[0]);
-    if (tiempo == 0) {
-      cambia_proceso = true;
-    }
+    cambia_proceso = true;
   }
 
   if (evento == TIMER) {
     printf("Llega interrupcion del Timer\n");
+    proceso[pars[0]].estado = LISTO;
     cambia_proceso = true;
   }
 
@@ -43,20 +42,20 @@ int scheduler(int evento) {
 
   if (evento == PROCESO_TERMINADO) {
     proceso[pars[0]].estado = TERMINADO;
-    cambia_proceso = true;
   }
 
   if (cambia_proceso) {
-    if (!cola_vacia(listos)) {
+    if (!cola_vacia(listos)){
     	int tmp_proc;
     	int min = INT_MAX;
+    	prox_proceso_a_ejecutar = NINGUNO;
     	for(int i=0; i<queue_size(listos); i++){
     		tmp_proc = sacar_de_cola(&listos);
     		if(proceso[tmp_proc].estado == TERMINADO){
 					continue;
+    		}
 
-    		}    		
-    		if(min > proceso[tmp_proc].trestante){
+    		if(min >= proceso[tmp_proc].trestante){
     			min = proceso[tmp_proc].trestante;
     			prox_proceso_a_ejecutar = tmp_proc;
     		}
@@ -65,8 +64,9 @@ int scheduler(int evento) {
     	}
       proceso[prox_proceso_a_ejecutar].estado = EJECUCION;
       cambia_proceso = false;
-    } else {
-      prox_proceso_a_ejecutar = NINGUNO;
+    }
+    else{
+    	printf("Ho hay procesos en cola\n");
     }
   }
   return prox_proceso_a_ejecutar;
