@@ -19,27 +19,36 @@ int scheduler(int evento) {
   if (evento == PROCESO_NUEVO) {
     // Agregar el nuevo proceso a la cola de listos
     // pars[0] es el proceso nuevo
+    // pars[1] es el proceso en ejecución
     proceso[pars[0]].estado = LISTO;
     mete_a_cola(&listos, pars[0]);
-    // pars[1] es el proceso en ejecución
-    if (tiempo == 0) { //if (pars[1] == NINGUNO)
-      cambia_proceso = 1;
-    }
+    cambia_proceso = tiempo == 0;
   }
 
   if (evento == TIMER) {
     printf("Llega interrupcion del Timer\n");
+    if (pars[1] == NINGUNO || pars[0] == NINGUNO) {
+      printf("No se metera procesos a la cola\n");
+    } else if (pars[1] == NINGUNO) {
+      proceso[pars[0]].estado = LISTO;
+      mete_a_cola(&listos, pars[0]);
+    } else {
+      proceso[pars[1]].estado = LISTO;
+      mete_a_cola(&listos, pars[1]);
+    }
+    cambia_proceso = 1;
   }
 
   if (evento == SOLICITA_E_S) {
-    proceso[pars[1]].estado = BLOQUEADO; 
+    proceso[pars[1]].estado = BLOQUEADO;
     printf("Solicita E/S Proceso %d\n", pars[1]);
+    cambia_proceso = 1;
   }
 
   if (evento == TERMINA_E_S) {
     // Saber cual proceso terminó E/S
     // pars0 es el proceso desbloqueado
-    proceso[pars[0]].estado = LISTO;
+    proceso[pars[0]].estado = EJECUCION;
     prox_proceso_a_ejecutar = pars[0];
     printf("Termina E/S Proceso desbloqueado %d\n", pars[0]);
   }
@@ -47,7 +56,6 @@ int scheduler(int evento) {
   if (evento == PROCESO_TERMINADO) {
     // pars0 = proceso terminado
     proceso[pars[0]].estado = TERMINADO;
-    cambia_proceso = 1; // Indíca que puede poner un proceso nuevo en ejecucion
   }
 
   if (cambia_proceso) {
@@ -57,7 +65,7 @@ int scheduler(int evento) {
       proceso[prox_proceso_a_ejecutar].estado = EJECUCION;
       cambia_proceso = 0;
     } else {
-      printf("Ho hay procesos en cola\n");
+      printf("No hay procesos en cola\n");
       prox_proceso_a_ejecutar = NINGUNO;
     }
   }
