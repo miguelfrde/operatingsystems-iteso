@@ -32,9 +32,7 @@ int scheduler(int evento) {
     printf("Proceso nuevo: %d\n", pars[0]);
     proceso[pars[0]].estado = LISTO;
     put_in_feedback_queue(pars[0]);
-    if (tiempo == 0) {
-      cambia_proceso = true;
-    }
+    cambia_proceso = tiempo == 0;
   }
 
   if (evento == TIMER) {
