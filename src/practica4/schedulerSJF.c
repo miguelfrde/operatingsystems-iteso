@@ -42,6 +42,7 @@ int scheduler(int evento) {
 
   if (evento == PROCESO_TERMINADO) {
     proceso[pars[0]].estado = TERMINADO;
+    cambia_proceso = true;
   }
 
   if (cambia_proceso) {
@@ -65,7 +66,7 @@ int scheduler(int evento) {
       proceso[prox_proceso_a_ejecutar].estado = EJECUCION;
       cambia_proceso = false;
     }
-    else{
+    if (prox_proceso_a_ejecutar == NINGUNO){
     	printf("Ho hay procesos en cola\n");
     }
   }
