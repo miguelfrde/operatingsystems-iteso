@@ -31,7 +31,7 @@ void process(int i) {
     fflush(stdout);
     sleep(rand() % 3);
     printf(" - Sale %s\n", country[i]);
-    // Finish critical section
+    // End critical section
 
     l = 1;
     *g = 0;
@@ -39,6 +39,8 @@ void process(int i) {
     // Random wait outside of the critical section
     sleep(rand() % 3);
   }
+
+  exit(0);
 }
 
 int main(int argc, char* argv[]) {

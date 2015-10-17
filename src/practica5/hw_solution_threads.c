@@ -33,7 +33,7 @@ void *thread1(void *arg) {
     fflush(stdout);
     sleep(rand() % 3);
     printf(" - Sale %s\n", country[i]);
-    // Finish critical section
+    // End critical section
 
     g = 0;
     l = 1;
