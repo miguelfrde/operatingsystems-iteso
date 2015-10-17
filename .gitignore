@@ -35,6 +35,8 @@ src/practica4/mfq
 src/practica4/proceso
 src/practica4/sjf
 src/practica4/schedulerRR
+src/practica5/hw_solution_processes
+src/practica5/hw_solution_threads
 *.c~
 
 
@@ -55,4 +57,4 @@ main_just_cache
 src/practica1/
 src/bookexercises/
 
-*.bmp
+.bmp

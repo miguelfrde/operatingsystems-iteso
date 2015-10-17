@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <pthread.h>
 
 // Macro for the machine instruction xchg
@@ -30,7 +32,7 @@ void *thread1(void *arg) {
     printf("Entra %s", country[i]);
 		fflush(stdout);
 		sleep(rand() % 3);
-		printf("Sale %s\n", country[i]);
+		printf(" - Sale %s\n", country[i]);
 		// Finish critical section
 
     g = 0;
@@ -39,11 +41,12 @@ void *thread1(void *arg) {
     // Random wait outside of the critical section
 		sleep(rand() % 3);
 	}
+
+  pthread_exit(NULL);
 }
 
 int main(int argc, char* argv[]) {
   pthread_t tid[3];
-  int res;
   int args[3];
   void *thread_result;
 
@@ -52,12 +55,12 @@ int main(int argc, char* argv[]) {
   // Create the threads
   for (int i = 0; i < 3; i++) {
   	args[i] = i;
- 	  res = pthread_create(&tid[i], NULL, thread1, (void *) &args[i]);
+ 	  pthread_create(&tid[i], NULL, thread1, (void *) &args[i]);
   }
 
 	// Wait for the threads to finish
   for (int i = 0; i < 3; i++) {
-  	res = pthread_join(tid[i], &thread_result);
+  	pthread_join(tid[i], &thread_result);
   }
 
   return 0;

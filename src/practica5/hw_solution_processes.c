@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/wait.h>
 
 #define atomic_xchg(A,B) __asm__ __volatile__( \
 		" lock xchg %1,%0 ;\n" \
@@ -29,7 +30,7 @@ void process(int i) {
 		printf("Entra %s", country[i]);
 		fflush(stdout);
 		sleep(rand() % 3);
-		printf("Sale %s\n", country[i]);
+		printf(" - Sale %s\n", country[i]);
     // Finish critical section
 
 		l = 1;
@@ -44,8 +45,6 @@ int main(int argc, char* argv[]) {
 	int pid;
 	int status;
 	int shmid;
-	int args[3];
-	void *thread_result;
 
   // Request the shared memory
 	shmid = shmget(0x1234, sizeof(g), 0666 | IPC_CREAT);
