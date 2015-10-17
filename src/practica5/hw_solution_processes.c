@@ -10,65 +10,73 @@
 		: "m" (B), "ir" (A) \
 		);
 
-#define CICLOS 10
+#define ITERS 10
 
-char *pais[3]={"Peru","Bolvia","Colombia"};
+char *country[3] = {"Peru","Bolivia","Colombia"};
 int *g;
 
-void proceso(int i) {
-	int k;
+void process(int i) {
 	int l;
 
-	for(k=0;k<CICLOS;k++) {
-		l=1;
-		do {
-			atomic_xchg(l,*g);
-		} while(l!=0);
+	for (int k = 0; k < ITERS; k++) {
+		l = 1;
 
-		printf("Entra %s",pais[i]);
+    do {
+			atomic_xchg(l,*g);
+		} while (l != 0);
+
+    // Begin critical section
+		printf("Entra %s", country[i]);
 		fflush(stdout);
-		sleep(rand()%3);
-		printf("- %s Sale\n",pais[i]);
-		l=1;
-		*g=0;
-		// Espera aleatoria fuera de la sección crítica
-		sleep(rand()%3);
+		sleep(rand() % 3);
+		printf("Sale %s\n", country[i]);
+    // Finish critical section
+
+		l = 1;
+		*g = 0;
+
+    // Random wait outside of the critical section
+		sleep(rand() % 3);
 	}
-	exit(0); // Termina el proceso
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	int pid;
 	int status;
 	int shmid;
 	int args[3];
-	int i;
 	void *thread_result;
-	// Solicitar memoria compartida
-	shmid=shmget(0x1234,sizeof(g),0666|IPC_CREAT);
-	if (shmid==-1) {
+
+  // Request the shared memory
+	shmid = shmget(0x1234, sizeof(g), 0666 | IPC_CREAT);
+	if (shmid == -1) {
 		perror("Error en la memoria compartida\n");
 		exit(1);
 	}
 
-	// Conectar la variable a la memoria compartida
-	g=shmat(shmid,NULL,0);
-	if (g==NULL) {
+	// Connect the variable to the shared memory
+	g = shmat(shmid, NULL, 0);
+	if (g == NULL) {
 		perror("Error en el shmat\n");
 		exit(2);
 	}
 
-	*g=0;
+	*g = 0;
 	srand(getpid());
-	for	(i=0;i<3;i++) {
-		// Crea un nuevo proceso hijo que ejecuta la función proceso()
-		pid=fork();
-		if(pid==0)
-			proceso(i);
+
+  for	(int i = 0; i < 3; i++) {
+		pid = fork();
+		if (pid==0) {
+			process(i);
+    }
 	}
 
-	for(i=0;i<3;i++)
+	for (int i = 0; i < 3; i++) {
 		pid = wait(&status);
-	// Eliminar la memoria compartida
-	shmdt(g);
+  }
+
+  // Delete the shared memory
+  shmdt(g);
+
+  return 0;
 }
