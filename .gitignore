@@ -37,6 +37,7 @@ src/practica4/sjf
 src/practica4/schedulerRR
 src/practica5/hw_solution_processes
 src/practica5/hw_solution_threads
+src/practica5/semaphore_solution
 *.c~
 
 
