@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/wait.h>
 #include "semaphore.h"
 
 #define ITERS 10
 
-char *country[3] = {"Peru","Bolivia","Colombia"};
+char *country[3] = {"Peru", "Bolivia", "Colombia"};
 Semaphore *sem;
 
-void proceso(int i) {
+void process(int i) {
   for (int k = 0; k < ITERS; k++) {
     waitsem(sem);
     printf("Entra %s ", country[i]);
@@ -22,5 +25,35 @@ void proceso(int i) {
 }
 
 int main(int argc, char* argv[]) {
+  int shmid, pid, status;
+
+  // Request shared memory
+  shmid = shmget(0x1234, sizeof(sem), 0666 | IPC_CREAT);
+  if (shmid == -1) {
+    perror("Error en la memoria compartida\n");
+    exit(1);
+  }
+
+  // Allocate and create semaphore
+  sem = shmat(shmid, NULL, 0);
+  if (sem == NULL) {
+    perror("Error en la memoria compartida\n");
+    exit(2);
+  }
   initsem(sem, 1);
+
+  srand(getpid());
+
+  for (int i = 0; i < 3; i++) {
+    pid = fork();
+    if (pid == 0) {
+      process(i);
+    }
+  }
+
+  for (int i = 0; i < 3; i++) {
+    pid = wait(&status);
+  }
+
+  return 0;
 }
