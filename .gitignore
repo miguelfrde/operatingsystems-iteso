@@ -29,6 +29,7 @@
 *.i*86
 *.x86_64
 *.hex
+src/exercises
 src/practica2/sh
 src/practica4/fcfs
 src/practica4/mfq
