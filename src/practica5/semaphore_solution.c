@@ -55,5 +55,7 @@ int main(int argc, char* argv[]) {
     pid = wait(&status);
   }
 
+  shmdt(sem);
+
   return 0;
 }
