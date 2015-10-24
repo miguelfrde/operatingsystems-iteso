@@ -17,6 +17,7 @@ typedef struct Queue {
 
 typedef struct Semaphore {
   int counter;
+  int g;
   Queue queue;
 } Semaphore;
 

@@ -4,7 +4,6 @@
 #include <signal.h>
 #include "semaphore.h"
 
-int g;
 
 pid_t dequeue(Queue *queue) {
   if (queue->size == 0) {
@@ -32,8 +31,8 @@ void enqueue(Queue *queue, pid_t value) {
 void waitsem(Semaphore *sem) {
   int l = 1;
   pid_t pid = getpid();
-
-  do { atomic_xchg(l, g); } while (l != 0);
+  int tmp = sem->g;
+  do { atomic_xchg(l, tmp); } while (l != 0);
 
   sem->counter--;
   if (sem->counter < 0) {
@@ -41,14 +40,15 @@ void waitsem(Semaphore *sem) {
     kill(pid, SIGSTOP);
   }
 
-  g = 0;
+  sem->g = 0;
 }
 
 void signalsem(Semaphore *sem) {
   int l = 1;
   pid_t pid;
 
-  do { atomic_xchg(l, g); } while (l != 0);
+  int tmp = sem->g;
+  do { atomic_xchg(l, tmp); } while (l != 0);
 
   sem->counter++;
   if (sem->counter <= 0) {
@@ -56,12 +56,12 @@ void signalsem(Semaphore *sem) {
      kill(pid, SIGCONT);
   }
 
-  g = 0;
+  sem->g = 0;
 }
 
 void initsem(Semaphore *sem, int counter) {
   sem->counter = counter;
-  g = 0;
+  sem->g = 0;
   sem->queue.head = 0;
   sem->queue.tail = 0;
   sem->queue.size = 0;
