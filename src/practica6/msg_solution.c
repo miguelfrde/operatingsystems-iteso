@@ -4,29 +4,32 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
+ 
 
 #define ITERS 10
 
 char *country[3] = {"Peru", "Bolivia", "Colombia"};
-Semaphore *sem;
+sem_t *sem;
 
 void process(int i) {
   for (int k = 0; k < ITERS; k++) {
-    //TODO  Entrada SC(wait)
+    // TODO Enter critical section
     printf("Entra %s ", country[i]);
     fflush(stdout);
     sleep(rand() % 3);
     printf("- Sale %s\n", country[i]);
-    //TODO Salida SC(sig)
+    // TODO Exit critical section
     sleep(rand() % 3);
   }
   exit(0);
 }
 
 int main(int argc, char* argv[]) {
-  int shmid, pid, status;
+  int pid, status;
 
   srand(getpid());
+
+  //TODO initialize message stuff
 
   for (int i = 0; i < 3; i++) {
     pid = fork();
