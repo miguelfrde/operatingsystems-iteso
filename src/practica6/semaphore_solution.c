@@ -5,7 +5,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
-#include <fcntl.h>  
+#include <fcntl.h>
 
 #define ITERS 10
 

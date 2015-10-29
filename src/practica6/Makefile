@@ -13,7 +13,7 @@ semaphore_solution: semaphore_solution.o
 	$(CC) $(CFLAGS) -o $@ $^ -lpthread
 
 msg_solution: msg_solution.o
-	$(CC) $(CFLAGS) -o $@ $^ -lpthread  
+	$(CC) $(CFLAGS) -o $@ $^ -lpthread
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
