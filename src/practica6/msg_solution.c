@@ -8,7 +8,7 @@
 #include <sys/msg.h>
 #include "message.h"
 
-#define ITERS 10
+#define ITERS 4
 
 
 char *country[3] = {"Peru", "Bolivia", "Colombia"};
@@ -18,15 +18,13 @@ Message *send, *receive;
 
 void process(int i) {
   for (int k = 0; k < ITERS; k++) {
-    //Waits for a message with the type = i+1
-    msgrcv(mailbox, receive, 100, i + 1, 0);
+    // Waits for a message with the type = i+1
+    msgrcv(mailbox, receive, 100, 0, 0);
     printf("Entra %s ", country[i]);
     fflush(stdout);
     sleep(rand() % 3);
     printf("- Sale %s\n", country[i]);
-    //The message type increases
-    send->mType= ((i + 1) % 3) + 1;
-    //Send a message to the mailbox to unlock the next process
+    // Send a message to the mailbox to unlock the next process
     msgsnd(mailbox, send, 10, 0);
     sleep(rand() % 3);
   }
@@ -36,7 +34,7 @@ void process(int i) {
 int main(int argc, char* argv[]) {
   int pid, status;
 
-  //Initialize the message structs
+  // Initialize the message structs
   send = malloc(sizeof(Message));
   receive = malloc(sizeof(Message));
 
@@ -45,13 +43,11 @@ int main(int argc, char* argv[]) {
   srand(getpid());
 
   //Creates a mailbox
-  mailbox = msgget(1400, 0600 | IPC_CREAT );
+  mailbox = msgget(1400, 0666 | IPC_CREAT );
   if (mailbox == -1){
     printf("Unable to create a Message Queue");
   }
 
-  //Cleans the mailbox
-  msgctl(1400, IPC_RMID, NULL);
   //Send the first message to unblock the first process
   msgsnd(mailbox, send, 10, 0);
 
@@ -65,6 +61,9 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < 3; i++) {
     pid = wait(&status);
   }
+
+  // Cleans the mailbox
+  msgctl(mailbox, IPC_RMID, 0);
 
   return 0;
 }
