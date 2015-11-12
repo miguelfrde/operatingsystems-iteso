@@ -41,6 +41,8 @@ src/practica5/hw_solution_threads
 src/practica5/semaphore_solution
 src/practica6/semaphore_solution
 src/practica6/msg_solution
+!src/practica7/mmu.o
+!src/practica7/mmu32.o
 *.c~
 
 
