@@ -43,6 +43,7 @@ src/practica6/semaphore_solution
 src/practica6/msg_solution
 src/practica7/createswap
 src/practica7/swap
+src/practica7/processes
 !src/practica7/mmu.o
 !src/practica7/mmu32.o
 *.c~
