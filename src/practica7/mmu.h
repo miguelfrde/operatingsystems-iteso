@@ -5,20 +5,17 @@
 // Definición de estructuras
 
 struct SYSTEMFRAMETABLE {
-    int assigned;
-
-    char *paddress; // No modificar
-    int shmidframe;  // No modificar
+  int assigned;
+  char *paddress; // No modificar
+  int shmidframe;  // No modificar
 };
 
 struct PROCESSPAGETABLE {
-    int presente;
-    int modificado;
-    int framenumber;
-    unsigned long tarrived;
-    unsigned long tlastaccess;
+  int presente;
+  int modificado;
+  int framenumber;
+  unsigned long tarrived;
+  unsigned long tlastaccess;
 
-    int attached;   // No modificar
+  int attached;   // No modificar
 };
-
-
