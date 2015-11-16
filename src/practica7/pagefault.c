@@ -18,14 +18,13 @@ int pagefault(char *vaddress)
 {
     int i;
     int frame;
-    int pag_a_expulsar;
     int pag_del_proceso;
 
     // Calcula la página del proceso
     pag_del_proceso=(int) vaddress>>12;
     // Cuenta los marcos asignados al proceso
     i=countframesassigned();
-  
+
     // Busca un marco libre en el sistema
     frame=getfreeframe();
 

@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #define BRINCO 3*1024
 #define vaddress(X) (int) (X-base)
@@ -20,7 +21,7 @@ void proc0()
 
     ptr=base;
 
-    sprintf(ptr,"Escritura del proceso %d\0",idproc);
+    sprintf(ptr,"Escritura del proceso %d",idproc);
     for(i=0;i<3;i++)
     {
         printf("%s\n",ptr);
@@ -36,14 +37,14 @@ void proc0()
         c=*ptr;   // Lectura
         sleep(1);
         c=*ptr;
-             
+
         sleep(1);
         ptr++;
         c=*ptr;
         if(i==0)
             *ptr='A';  // Escritura
         else
-            printf("Proceso 0 escribe %c, en la dirección relativa %X\n",*ptr,vaddress(ptr));          
+            printf("Proceso 0 escribe %c, en la dirección relativa %X\n",*ptr,vaddress(ptr));
 
         sleep(1);
 
@@ -54,8 +55,8 @@ void proc0()
 
         ptr-=BRINCO;
         c=*ptr;
-        *ptr='A';             
-        *ptr='B';             
+        *ptr='A';
+        *ptr='B';
         *ptr='*';
         sleep(1);
         *ptr='*';
@@ -77,7 +78,7 @@ void proc1()
     char c;
 
     ptr=base;
-    sprintf(ptr,"Proceso 1, escribe mensaje de prueba\0");
+    sprintf(ptr,"Proceso 1, escribe mensaje de prueba");
     for(i=0;i<3;i++)
     {
         printf("%s\n",ptr);
@@ -93,11 +94,11 @@ void proc1()
         c=*ptr;
         sleep(1);
         c=*ptr;
-             
+
         sleep(1);
         ptr++;
         c=*ptr;
-        *ptr='A';          
+        *ptr='A';
 
         sleep(1);
 
@@ -108,8 +109,8 @@ void proc1()
 
         ptr-=BRINCO;
         c=*ptr;
-        *ptr='A';             
-        *ptr='B';             
+        *ptr='A';
+        *ptr='B';
         *ptr='*';
         sleep(1);
         *ptr='*';
@@ -148,11 +149,11 @@ void proc2()
         c=*ptr;
         sleep(1);
         c=*ptr;
-             
+
         sleep(1);
         ptr++;
         c=*ptr;
-        *ptr='A';          
+        *ptr='A';
 
         sleep(1);
 
@@ -163,8 +164,8 @@ void proc2()
 
         ptr+=BRINCO;
         c=*ptr;
-        *ptr='A';             
-        *ptr='B';             
+        *ptr='A';
+        *ptr='B';
         *ptr='*';
         sleep(1);
         *ptr='*';
@@ -189,14 +190,14 @@ void proc3()
 
     for(i=0;i<3;i++)
     {
-       
+
 	c=*ptr;
         sleep(1);
 
         ptr+=2*BRINCO;
 	strcpy(ptr,"hola soy proceso 3");
         printf("copied %s en la dirección relativa %X\n",ptr,vaddress(ptr));
-        
+
 
         sleep(1);
 
@@ -204,11 +205,11 @@ void proc3()
         c=*ptr;
         sleep(1);
         c=*ptr;
-             
+
         sleep(1);
         ptr++;
         c=*ptr;
-        *ptr='A';          
+        *ptr='A';
 
         sleep(1);
 
@@ -219,8 +220,8 @@ void proc3()
 
         ptr+=2*BRINCO;
         c=*ptr;
-        *ptr='A';             
-        *ptr='B';             
+        *ptr='A';
+        *ptr='B';
         *ptr='*';
         sleep(1);
         *ptr='*';
