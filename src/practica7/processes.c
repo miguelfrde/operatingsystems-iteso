@@ -13,223 +13,216 @@
 extern char *base;
 extern int idproc;
 
-void proc0()
-{
-    char *ptr=NULL;
-    int i;
-    char c;
+void proc0() {
+  char *ptr = NULL;
+  char c;
 
-    ptr=base;
+  ptr = base;
 
-    sprintf(ptr,"Escritura del proceso %d",idproc);
-    for(i=0;i<3;i++)
-    {
-        printf("%s\n",ptr);
+  sprintf(ptr, "Escritura del proceso %d", idproc);
+  for (int i = 0; i < 3; i++) {
+    printf("%s\n", ptr);
 
-        sleep(1);
+    sleep(1);
 
-        ptr+=5*BRINCO;
-        c=*ptr;    // Lectura
+    ptr += 5 * BRINCO;
+    c = *ptr;    // Lectura
 
-        sleep(1);
+    sleep(1);
 
-        ptr-=4*BRINCO;
-        c=*ptr;   // Lectura
-        sleep(1);
-        c=*ptr;
+    ptr -= 4 * BRINCO;
+    c = *ptr;   // Lectura
+    sleep(1);
+    c = *ptr;
 
-        sleep(1);
-        ptr++;
-        c=*ptr;
-        if(i==0)
-            *ptr='A';  // Escritura
-        else
-            printf("Proceso 0 escribe %c, en la dirección relativa %X\n",*ptr,vaddress(ptr));
+    sleep(1);
+    ptr++;
+    c = *ptr;
 
-        sleep(1);
-
-        ptr+=2*BRINCO;
-        c=*ptr;
-
-        sleep(1);
-
-        ptr-=BRINCO;
-        c=*ptr;
-        *ptr='A';
-        *ptr='B';
-        *ptr='*';
-        sleep(1);
-        *ptr='*';
-        sleep(1);
-
-        ptr+=BRINCO;
-        c=*ptr;
-
-        ptr=base;
+    if (i == 0) {
+      *ptr = 'A';  // Escritura
+    } else {
+      printf("Proceso 0 escribe %c, en la dirección relativa %X\n", *ptr, vaddress(ptr));
     }
-    return;
+
+    sleep(1);
+
+    ptr += 2 * BRINCO;
+    c = *ptr;
+
+    sleep(1);
+
+    ptr -= BRINCO;
+    c = *ptr;
+    *ptr = 'A';
+    *ptr = 'B';
+    *ptr = '*';
+    sleep(1);
+    *ptr = '*';
+    sleep(1);
+
+    ptr += BRINCO;
+    c = *ptr;
+
+    ptr = base;
+  }
+
+  return;
 }
 
 
-void proc1()
-{
-    char *ptr=NULL;
-    int i;
-    char c;
+void proc1() {
+  char *ptr = NULL;
+  char c;
 
-    ptr=base;
-    sprintf(ptr,"Proceso 1, escribe mensaje de prueba");
-    for(i=0;i<3;i++)
-    {
-        printf("%s\n",ptr);
+  ptr = base;
+  sprintf(ptr, "Proceso 1, escribe mensaje de prueba");
 
-        sleep(1);
+  for (int i = 0; i < 3; i++) {
+    printf("%s\n", ptr);
 
-        ptr+=3*BRINCO;
-        c=*ptr;
+    sleep(1);
 
-        sleep(1);
+    ptr += 3*BRINCO;
+    c = *ptr;
 
-        ptr-=2*BRINCO;
-        c=*ptr;
-        sleep(1);
-        c=*ptr;
+    sleep(1);
 
-        sleep(1);
-        ptr++;
-        c=*ptr;
-        *ptr='A';
+    ptr -= 2 * BRINCO;
+    c = *ptr;
+    sleep(1);
+    c = *ptr;
 
-        sleep(1);
+    sleep(1);
+    ptr++;
+    c = *ptr;
+    *ptr = 'A';
 
-        ptr+=2*BRINCO;
-        c=*ptr;
+    sleep(1);
 
-        sleep(1);
+    ptr += 2 * BRINCO;
+    c = *ptr;
 
-        ptr-=BRINCO;
-        c=*ptr;
-        *ptr='A';
-        *ptr='B';
-        *ptr='*';
-        sleep(1);
-        *ptr='*';
-        sleep(1);
+    sleep(1);
 
-        ptr+=BRINCO;
-        c=*ptr;
-        ptr=base;
-    }
+    ptr -= BRINCO;
+    c = *ptr;
+    *ptr = 'A';
+    *ptr = 'B';
+    *ptr = '*';
+    sleep(1);
+    *ptr = '*';
+    sleep(1);
 
-    return;
+    ptr += BRINCO;
+    c = *ptr;
+    ptr = base;
+  }
+
+  return;
 }
 
 
-void proc2()
-{
-    char *ptr=NULL;
-    int i;
-    char c;
+void proc2() {
+  char *ptr = NULL;
+  char c;
 
-    ptr=base;
+  ptr = base;
 
-    for(i=0;i<3;i++)
-    {
-        strcpy(ptr,"hola soy proceso 2");
-        printf("copiado %s en la dirección relativa %X\n",ptr,vaddress(ptr));
+  for (int i = 0; i < 3; i++) {
+    strcpy(ptr, "hola soy proceso 2");
+    printf("copiado %s en la dirección relativa %X\n", ptr, vaddress(ptr));
 
-        sleep(1);
+    sleep(1);
 
-        ptr+=3*BRINCO;
-        c=*ptr;
+    ptr += 3*BRINCO;
+    c = *ptr;
 
-        sleep(1);
+    sleep(1);
 
-        ptr+=BRINCO;
-        c=*ptr;
-        sleep(1);
-        c=*ptr;
+    ptr += BRINCO;
+    c = *ptr;
+    sleep(1);
+    c = *ptr;
 
-        sleep(1);
-        ptr++;
-        c=*ptr;
-        *ptr='A';
+    sleep(1);
+    ptr++;
+    c = *ptr;
+    *ptr = 'A';
 
-        sleep(1);
+    sleep(1);
 
-        ptr-=3*BRINCO;
-        c=*ptr;
+    ptr -= 3 * BRINCO;
+    c = *ptr;
 
-        sleep(1);
+    sleep(1);
 
-        ptr+=BRINCO;
-        c=*ptr;
-        *ptr='A';
-        *ptr='B';
-        *ptr='*';
-        sleep(1);
-        *ptr='*';
-        sleep(1);
+    ptr += BRINCO;
+    c = *ptr;
+    *ptr = 'A';
+    *ptr = 'B';
+    *ptr = '*';
+    sleep(1);
+    *ptr = '*';
+    sleep(1);
 
-        ptr+=BRINCO;
-        c=*ptr;
-        ptr=base;
-    }
+    ptr += BRINCO;
+    c = *ptr;
+    ptr = base;
+  }
 
-    return;
+  return;
 }
 
 
-void proc3()
-{
-    char *ptr=NULL;
-    int i;
-    char c;
+void proc3() {
+  char *ptr = NULL;
+  char c;
 
-    ptr=base;
+  ptr = base;
 
-    for(i=0;i<3;i++)
-    {
+  for (int i = 0; i < 3; i++) {
 
-	c=*ptr;
-        sleep(1);
+    c = *ptr;
+    sleep(1);
 
-        ptr+=2*BRINCO;
-	strcpy(ptr,"hola soy proceso 3");
-        printf("copied %s en la dirección relativa %X\n",ptr,vaddress(ptr));
+    ptr += 2 * BRINCO;
+    strcpy(ptr, "hola soy proceso 3");
+    printf("copied %s en la dirección relativa %X\n", ptr, vaddress(ptr));
 
 
-        sleep(1);
+    sleep(1);
 
-        ptr-=3*BRINCO;
-        c=*ptr;
-        sleep(1);
-        c=*ptr;
+    ptr -= 3 * BRINCO;
+    c = *ptr;
+    sleep(1);
+    c = *ptr;
 
-        sleep(1);
-        ptr++;
-        c=*ptr;
-        *ptr='A';
+    sleep(1);
+    ptr++;
+    c = *ptr;
+    *ptr = 'A';
 
-        sleep(1);
+    sleep(1);
 
-        ptr+=BRINCO;
-        c=*ptr;
+    ptr += BRINCO;
+    c = *ptr;
 
-        sleep(1);
+    sleep(1);
 
-        ptr+=2*BRINCO;
-        c=*ptr;
-        *ptr='A';
-        *ptr='B';
-        *ptr='*';
-        sleep(1);
-        *ptr='*';
-        sleep(1);
+    ptr += 2 * BRINCO;
+    c = *ptr;
+    *ptr = 'A';
+    *ptr = 'B';
+    *ptr = '*';
+    sleep(1);
+    *ptr = '*';
+    sleep(1);
 
-        ptr-=BRINCO;
-        c=*ptr;
-        ptr=base;
-    }
-    return;
+    ptr -= BRINCO;
+    c = *ptr;
+    ptr = base;
+  }
+
+  return;
 }
