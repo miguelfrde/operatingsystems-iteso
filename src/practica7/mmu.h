@@ -16,6 +16,5 @@ struct PROCESSPAGETABLE {
   int framenumber;
   unsigned long tarrived;
   unsigned long tlastaccess;
-
   int attached;   // No modificar
 };
