@@ -1,5 +1,4 @@
 // Definición de constantes
-
 #define NINGUNO -1
 
 // Definición de estructuras
@@ -18,3 +17,5 @@ struct PROCESSPAGETABLE {
   unsigned long tlastaccess;
   int attached;   // No modificar
 };
+
+int countframesassigned();
