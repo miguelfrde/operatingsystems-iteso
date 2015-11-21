@@ -5,6 +5,7 @@
 
 #define RESIDENTSETSIZE 24
 #define PAGE_SIZE 4096
+#define MAX_PROCESSES 4
 
 extern char *base;
 extern int idproc;
@@ -31,10 +32,11 @@ void read_swap();
 int pagefault(char *vaddress) {
   int frame;
   int process_page = (int) vaddress >> 12;
+  int frames_per_process = systemframetablesize / MAX_PROCESSES;
 
   // Each process can have 2 frames asisgned in the main memory at most (frames_per_process)
   // First check if there's available space in the main memory
-  if (countframesassigned() < RESIDENTSETSIZE/12) {
+  if (countframesassigned() < frames_per_process) {
     frame = get_physical_frame();
     if (frame == NINGUNO) {
       return NINGUNO;
