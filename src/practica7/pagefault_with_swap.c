@@ -31,15 +31,17 @@ void read_swap();
 int pagefault(char *vaddress) {
   int frame;
   int process_page = (int) vaddress >> 12;
-  int frames_per_process = systemframetablesize / 4;
 
   // Each process can have 2 frames asisgned in the main memory at most (frames_per_process)
   // First check if there's available space in the main memory
-  if (countframesassigned() < frames_per_process) {
+  if (countframesassigned() <= RESIDENTSETSIZE/12) {
     frame = get_physical_frame();
     if (frame == NINGUNO) {
       return NINGUNO;
     }
+    // Write the frame in the swap file
+    char *address = systemframetable[frame].paddress;
+    write_swap(address, frame);
     processpagetable[process_page].framenumber = frame;
   } else {
     // Check if the page is already in the virtual space, if not assign it to some frame
@@ -85,7 +87,7 @@ int get_physical_frame() {
  * True if a page is assigned to a virtual frame, this is the last 8 frames in
  * the swap memory
  */
-bool page_has_virtual_page_assigned(int page) {
+bool page_has_virtual_frame_assigned(int page) {
   int frame = processpagetable[page].framenumber;
   int min_frame = systemframetablesize;
   int max_frame = systemframetablesize * 2;
@@ -117,10 +119,36 @@ int get_frame(int start, int end) {
  * and saves it in the swap file.
  */
 void swap_in_file(int page_in) {
+  // Choose a page to replace (the least used page)
   int page_out = get_lru_page();
+
   int frame_out = processpagetable[page_out].framenumber;
   int frame_in = processpagetable[page_in].framenumber;
-  // TODO
+
+  // Save the page if it has been modified
+  if (processpagetable[page_out].modificado == 1){
+    char *address = systemframetable[frame_out].paddress;
+    write_swap(address, frame_out);
+    processpagetable[page_out].modificado = 0;
+  }
+
+  // Swap the physical frame with the virtual frame
+  char *page_swap_vm = (char*)malloc(PAGE_SIZE);
+  char *page_swap_pm = (char*)malloc(PAGE_SIZE);
+
+  read_swap(page_swap_vm, frame_in);
+  read_swap(page_swap_pm, frame_out);
+
+  write_swap(page_swap_vm, frame_out);
+  write_swap(page_swap_pm, frame_in);
+
+  // Updates the page table
+  processpagetable[page_in].framenumber = frame_out;
+  processpagetable[page_out].framenumber= frame_in;
+  processpagetable[page_out].presente = 0;
+  
+  free(page_swap_vm);
+  free(page_swap_pm);
 }
 
 /**
