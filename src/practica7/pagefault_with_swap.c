@@ -34,7 +34,7 @@ int pagefault(char *vaddress) {
 
   // Each process can have 2 frames asisgned in the main memory at most (frames_per_process)
   // First check if there's available space in the main memory
-  if (countframesassigned() <= RESIDENTSETSIZE/12) {
+  if (countframesassigned() < RESIDENTSETSIZE/12) {
     frame = get_physical_frame();
     if (frame == NINGUNO) {
       return NINGUNO;
