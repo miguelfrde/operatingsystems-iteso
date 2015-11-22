@@ -1,6 +1,6 @@
 CC := gcc
 IGNORE_WARNINGS := -Wno-implicit-function-declaration -Wno-unused-but-set-variable -Wno-pointer-to-int-cast
-CFLAGS := -O3 -g -Wall -Werror -std=c99 $(IGNORE_WARNINGS)
+CFLAGS := -g -Wall -Werror -std=c99 $(IGNORE_WARNINGS)
 
 SRCS := pagefault.c
 
@@ -19,7 +19,7 @@ CREATESWAP_OBJS := $(CREATESWAP_SRC:.c=.o)
 MAINS := $(PROCESSES_MAIN) $(CREATESWAP_MAIN) $(PROCESSES_SWAP_MAIN)
 OBJS := $(PROCESSES_SRC:.c=.o) $(PROCESSES_SWAP_SRC:.c=.o) $(CREATESWAP_OBJS)
 
-all: $(MAINS)
+all: $(MAINS) swap
 
 $(PROCESSES_MAIN): $(PROCESSES_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^

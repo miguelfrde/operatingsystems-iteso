@@ -19,7 +19,7 @@ int get_lru_page();
 int get_physical_frame();
 bool page_has_virtual_frame_assigned(int page);
 int get_virtual_frame();
-int get_frame(int start, int end);
+int get_free_frame(int start, int end);
 void swap_in_file(int frame);
 void write_swap();
 void read_swap();
@@ -82,7 +82,7 @@ int get_lru_page() {
  * Returns and assigns an unassigned frame in the physical area
  */
 int get_physical_frame() {
-  return get_frame(0, systemframetablesize);
+  return get_free_frame(0, systemframetablesize);
 }
 
 /**
@@ -93,20 +93,20 @@ bool page_has_virtual_frame_assigned(int page) {
   int frame = processpagetable[page].framenumber;
   int min_frame = systemframetablesize;
   int max_frame = systemframetablesize * 2;
-  return min_frame <= frame && frame <= max_frame;
+  return min_frame <= frame && frame < max_frame;
 }
 
 /**
  * Returns and assigns an unassigned frame in the virtual area
  */
 int get_virtual_frame() {
-  return get_frame(systemframetablesize, systemframetablesize * 2);
+  return get_free_frame(systemframetablesize, systemframetablesize * 2);
 }
 
 /**
  * Returns and assigns an unassigned fram in the range [start, end)
  */
-int get_frame(int start, int end) {
+int get_free_frame(int start, int end) {
   for (int i = start; i < end; i++) {
     if (!systemframetable[i].assigned) {
       systemframetable[i].assigned = 1;
@@ -127,30 +127,30 @@ void swap_in_file(int page_in) {
   int frame_out = processpagetable[page_out].framenumber;
   int frame_in = processpagetable[page_in].framenumber;
 
-  // Save the page if it has been modified
-  if (processpagetable[page_out].modificado == 1){
+  // Save the page if it has been modified directly from the systemtable
+  if (processpagetable[page_out].modificado == 1) {
     char *address = systemframetable[frame_out].paddress;
     write_swap(address, frame_out);
-    processpagetable[page_out].modificado = 0;
   }
 
   // Swap the physical frame with the virtual frame
-  char *page_swap_vm = (char*)malloc(PAGE_SIZE);
-  char *page_swap_pm = (char*)malloc(PAGE_SIZE);
+  char frame_in_content[PAGE_SIZE];
+  char frame_out_content[PAGE_SIZE];
 
-  read_swap(page_swap_vm, frame_in);
-  read_swap(page_swap_pm, frame_out);
+  read_swap(frame_in_content, frame_in);
+  read_swap(frame_out_content, frame_out);
 
-  write_swap(page_swap_vm, frame_out);
-  write_swap(page_swap_pm, frame_in);
+  write_swap(frame_in_content, frame_out);
+  write_swap(frame_out_content, frame_in);
 
   // Updates the page table
   processpagetable[page_in].framenumber = frame_out;
+  processpagetable[page_in].presente = 1;
+  processpagetable[page_in].modificado = 0;
+
   processpagetable[page_out].framenumber= frame_in;
   processpagetable[page_out].presente = 0;
-  
-  free(page_swap_vm);
-  free(page_swap_pm);
+  processpagetable[page_out].modificado = 0;
 }
 
 /**
@@ -159,10 +159,7 @@ void swap_in_file(int page_in) {
 void read_swap(char* buffer, int frame) {
   FILE *file = fopen("swap", "rb");
   fseek(file, frame * PAGE_SIZE, SEEK_SET);
-  if (fread(buffer, 1, PAGE_SIZE, file) != PAGE_SIZE) {
-    perror("Couldn't read from the swap file");
-    exit(1);
-  }
+  fread(buffer, 1, PAGE_SIZE, file);
   fclose(file);
 }
 
