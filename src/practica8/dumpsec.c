@@ -7,7 +7,6 @@
 #define SECSIZE 512
 
 int main(int argc, char *argv[]) {
-  // TODO
 	int drive;
 	int ncyl, nhead, nsec;
 	unsigned char buffer[SECSIZE];

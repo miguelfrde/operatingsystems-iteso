@@ -1,18 +1,29 @@
-CC := cc
-CFLAGS := -g -Wall -std=c99 -D_GNU_SOURCE
+CC := gcc
+CFLAGS := -g -Wall -Werror -std=c99
 
-SRCS := dumpseclog.c vdfdisk.c
-MAINS := dumpseclog vdfdisk
 DEPENDENCIES := vdisk.o
-
+SRCS := dumpsec.c dumpseclog.c fileio.c shell.c vdfdisk.c vdformat.c vdlib.c
+MAINS := dumpsec dumpseclog vdfdisk shell vdformat
 OBJS := $(SRCS:.c=.o)
 
 all: $(MAINS)
 
+shell: shell.o fileio.o
+	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
+
+vdfdisk: vdfdisk.o vdlib.o
+	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
+
+dumpsec: dumpsec.o
+	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
+
 dumpseclog: dumpseclog.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
-vdfdisk: vdfdisk.o
+createvd:
+	./createvd $(vdnum)
+
+vdformat: vdformat.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
 .c.o:

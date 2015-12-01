@@ -1,5 +1,5 @@
-#ifndef STRUCTS
-#define STRUCTS
+#ifndef _VD_LIB_H_
+#define _VD_LIB_H_
 
 typedef struct PARTITION {
   char drive_status;
@@ -22,14 +22,14 @@ typedef struct MBR {
 
 // Debe medir 512 bytes
 typedef struct SECBOOT {
-  char jump[4];     
-  char nombre_particion[8]; 
+  char jump[4];
+  char nombre_particion[8];
   unsigned char sec_res;    // 1 sector reservado
   unsigned char sec_mapa_bits_bloques;  // 16 sectores
   unsigned short sec_tabla_nodos_i; //  15 sectores
   unsigned int sec_log_particion;   // 130559 sectores
   unsigned char sec_x_bloque;     // 2 sectores por bloque
-  unsigned char heads;        // 48 superficies       
+  unsigned char heads;        // 48 superficies
   unsigned char cyls;         // 160 cilindros
   unsigned char secfis;       // 17 sectores por track
   char restante[486];

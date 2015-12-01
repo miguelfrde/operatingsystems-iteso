@@ -5,54 +5,56 @@ This program will create the data structures and necessary tables in the first d
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "structs.h"
+#include "vdlib.h"
 #include "vdisk.h"
 #include <string.h>
 
 #define SECSIZE 512
-void printBuffer(char[] buffer){
-  for(int i = 0; i<SECSIZE; i++){
-    printf("%c", buffer[i]); 
-  }  
+
+void printBuffer(unsigned char* buffer) {
+  for (int i = 0; i < SECSIZE; i++) {
+    printf("%c", buffer[i]);
+  }
 }
 
-int writeToSector(MBR *sector, int driveNumber){
-  
-  char buffer[SECSIZE];
-  
+int writeToSector(MBR *sector, int driveNumber) {
+  unsigned char buffer[SECSIZE];
+  unsigned char readBuffer[SECSIZE];
+
   printf("%s", sector->bootstrap_code);
-  for(unsigned int i = 0; i<sizeof(sector); i++){
-    buffer[i] = *((char*)(sector) + i); 
+  for (int i = 0; i < sizeof(sector); i++) {
+    buffer[i] = *((char*)(sector) + i);
   }
+
   //memcpy(buffer, &sector, SECSIZE);
   printBuffer(buffer);
   //debugging what's inside the buffer
 
-  if(vdwritesector(driveNumber, 0, 0, 1, 1, buffer) == -1){
-    printf("Error al escribir\n"); 
+  if (vdwritesector(driveNumber, 0, 0, 1, 1, buffer) == -1) {
+    printf("Error al escribir\n");
   }
- 
-  char readBuffer[SECSIZE];
-  if(vdreadsector(driveNumber, 0, 0, 1, 1, readBuffer) == -1){
-    printf("Error al leer\n"); 
+
+  if (vdreadsector(driveNumber, 0, 0, 1, 1, readBuffer) == -1) {
+    printf("Error al leer\n");
   }
-  
+
   printf("\n\n\n\n");
   printBuffer(readBuffer);
 
   return 0;
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
   //Reading the drive number from the args
   int driveNumber = atoi(argv[1]);
 
   //MBR
   MBR firstSector;
   char bootstrap_code[446];
-  for (int i = 0; i < 447; i++){
+  for (int i = 0; i < 447; i++) {
     bootstrap_code[i] = 'A';
   }
+
   //strcpy(bootstrap_code, "ASSEMBLY CODE HERE");
   PARTITION partition;
   short boot_signature = 1;
@@ -66,10 +68,10 @@ int main(int argc, char *argv[]){
   strcpy(chs_end, "NDA");
   int lba = 48;
   int secs_partition = 48;
- 
+
   //Initialize partition
   partition.drive_status = drive_status;
-  strcpy(partition.chs_begin, chs_begin); 
+  strcpy(partition.chs_begin, chs_begin);
   partition.partition_type = partition_type;
   strcpy(partition.chs_end, chs_end);
   partition.lba = lba;
@@ -82,5 +84,6 @@ int main(int argc, char *argv[]){
   firstSector.boot_signature = boot_signature;
 
   writeToSector(&firstSector, driveNumber);
+
   return 0;
 }

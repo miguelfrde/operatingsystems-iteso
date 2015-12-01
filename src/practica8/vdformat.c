@@ -1,14 +1,10 @@
 /*
 3.2.1
 This program will create the data structures and necessary tables in the partition created
-
 */
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-int main(){
 
 
+int main(int argc, char* argv[]) {
+  // TODO
   return 0;
 }

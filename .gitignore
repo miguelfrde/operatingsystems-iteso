@@ -49,11 +49,13 @@ src/practica7/processes_swap
 !src/practica7/mmu32.o
 *.c~
 src/practica8/disco0.vd
+src/practica8/dumpsec
 src/practica8/dumpseclog
-src/practica8/createvd
 src/practica8/write
 src/practica8/writeinsector.c
 src/practica8/vdfdisk
+src/practica8/vdformat
+src/practica8/shell
 
 
 #binaries
