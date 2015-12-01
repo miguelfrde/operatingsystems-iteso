@@ -10,20 +10,23 @@ This program will create the data structures and necessary tables in the first d
 #include <string.h>
 
 #define SECSIZE 512
-int writeToSector(MBR sector, int driveNumber){
+void printBuffer(char[] buffer){
+  for(int i = 0; i<SECSIZE; i++){
+    printf("%c", buffer[i]); 
+  }  
+}
+
+int writeToSector(MBR *sector, int driveNumber){
   
   char buffer[SECSIZE];
   
-  printf("%s", sector.bootstrap_code);
-  /*for(unsigned int i = 0; i<sizeof(sector); i++){
-    buffer[i] = *((char*)(&sector) + i); 
-  }*/
-  memcpy(buffer, sector.bootstrap_code, sizeof(sector));
-
-  //debugging what's inside the buffer
+  printf("%s", sector->bootstrap_code);
   for(unsigned int i = 0; i<sizeof(sector); i++){
-    printf("%c", buffer[i]); 
+    buffer[i] = *((char*)(sector) + i); 
   }
+  //memcpy(buffer, &sector, SECSIZE);
+  printBuffer(buffer);
+  //debugging what's inside the buffer
 
   if(vdwritesector(driveNumber, 0, 0, 1, 1, buffer) == -1){
     printf("Error al escribir\n"); 
@@ -34,7 +37,8 @@ int writeToSector(MBR sector, int driveNumber){
     printf("Error al leer\n"); 
   }
   
-  printf("Read buffer: \n%s\n", readBuffer); 
+  printf("\n\n\n\n");
+  printBuffer(readBuffer);
 
   return 0;
 }
@@ -75,11 +79,8 @@ int main(int argc, char *argv[]){
   //Initialize MBR
   strcpy(firstSector.bootstrap_code, bootstrap_code);
   firstSector.partition[0] = partition;
-  firstSector.partition[1] = partition;
-  firstSector.partition[2] = partition;
-  firstSector.partition[3] = partition;
   firstSector.boot_signature = boot_signature;
 
-  writeToSector(firstSector, driveNumber);
+  writeToSector(&firstSector, driveNumber);
   return 0;
 }

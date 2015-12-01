@@ -20,4 +20,4 @@ vdfdisk: vdfdisk.o
 
 .PHONY: clean
 clean:
-	rm -f *.o *~ $(MAINS) && cp lib/vdisk.o vdisk.o
+	rm -f $(OBJS) *~ $(MAINS)

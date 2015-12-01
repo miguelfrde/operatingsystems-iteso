@@ -53,6 +53,7 @@ src/practica8/dumpseclog
 src/practica8/createvd
 src/practica8/write
 src/practica8/writeinsector.c
+src/practica8/vdfdisk
 
 
 #binaries
