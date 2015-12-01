@@ -1,9 +1,9 @@
 CC := gcc
-CFLAGS := -g -Wall -Werror -std=c99
+CFLAGS := -g -Wall -Werror -std=c99 -Wno-format-contains-nul
 
 DEPENDENCIES := vdisk.o
-SRCS := dumpsec.c dumpseclog.c fileio.c shell.c vdfdisk.c vdformat.c vdlib.c
-MAINS := dumpsec dumpseclog vdfdisk shell vdformat
+SRCS := dumpsec.c dumpseclog.c fileio.c shell.c vdfdisk.c vdformat.c vdlib.c createvd.c
+MAINS := dumpsec dumpseclog vdfdisk shell vdformat createvd
 OBJS := $(SRCS:.c=.o)
 
 all: $(MAINS)
@@ -20,8 +20,8 @@ dumpsec: dumpsec.o
 dumpseclog: dumpseclog.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
-createvd:
-	./createvd $(vdnum)
+createvd: createvd.o
+	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
 vdformat: vdformat.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
