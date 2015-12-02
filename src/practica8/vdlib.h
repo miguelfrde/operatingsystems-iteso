@@ -1,6 +1,9 @@
 #ifndef _VD_LIB_H_
 #define _VD_LIB_H_
 
+#define MAX_NUM_OF_FILES_IN_ROOT 60
+#define BLOCKSMAP_SIZE 512
+
 typedef struct PARTITION {
   char drive_status;
   char chs_begin[3];
@@ -52,8 +55,6 @@ typedef struct INODE {
   unsigned short indirect;  // 16 bits
   unsigned short indirect2; // 16 bits
 } INODE;
-// printf("%d\n",sizeof(struct INODE));
-
 
 typedef struct DATE {
   int year;
@@ -63,5 +64,23 @@ typedef struct DATE {
   int min;
   int sec;
 } DATE;
+
+int vdwriteseclog(int sec_log, char *buffer);
+int vdreadseclog(int sec_log, char *buffer);
+
+int isblockfree(int block);
+int nextfreeblock();
+int assignblock(int block);
+int unassignblock(int block);
+int writeblock(int block, char *buffer);
+int readblock(int block, char *buffer);
+
+unsigned int datetoint(DATE date);
+int inttodate(DATE *date, unsigned int val);
+unsigned int currdatetimetoint();
+
+int setninode(int num, char *filename, unsigned short atribs, int uid, int gid);
+int searchinode(char *filename);
+int removeinode(int numinode);
 
 #endif

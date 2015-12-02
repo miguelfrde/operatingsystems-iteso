@@ -8,7 +8,7 @@ OBJS := $(SRCS:.c=.o)
 
 all: $(MAINS)
 
-shell: shell.o fileio.o
+shell: shell.o fileio.o vdlib.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
 vdfdisk: vdfdisk.o vdlib.o
