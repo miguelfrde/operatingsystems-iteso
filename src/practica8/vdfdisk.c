@@ -15,7 +15,7 @@ int writeToSector(MBR *sector, int driveNumber) {
   unsigned char buffer[SECSIZE];
 
   for (int i = 0; i < sizeof(MBR); i++) {
-    buffer[i] = *((char*)sector + i);
+    buffer[i] = *((char*) sector + i);
     printf("%c", buffer[i]);
   }
 
