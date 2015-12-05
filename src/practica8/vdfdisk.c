@@ -26,6 +26,25 @@ int writeToSector(MBR *sector, int driveNumber) {
   return 0;
 }
 
+
+//Initialize partition
+void initializePartition(PARTITION* partition, int drive_status, char chs_begin[], char partition_type, char chs_end[], int lba, int secs_partition){
+
+  partition->drive_status = drive_status;
+  strcpy(partition->chs_begin, chs_begin);
+  partition->partition_type = partition_type;
+  strcpy(partition->chs_end, chs_end);
+  partition->lba = lba;
+  partition->secs_partition = secs_partition;
+
+} 
+
+void initializeMBR(MBR* firstSector, char bootstrap_code[], PARTITION partition, short boot_signature){
+  strcpy(firstSector->bootstrap_code, bootstrap_code);
+  firstSector->partition[0] = partition;
+  firstSector->boot_signature = boot_signature;
+}
+
 int main(int argc, char *argv[]) {
   //Reading the drive number from the args
   int driveNumber = atoi(argv[1]);
@@ -51,18 +70,10 @@ int main(int argc, char *argv[]) {
   int lba = 49; //ascci value: 1
   int secs_partition = 49; 
 
-  //Initialize partition
-  partition.drive_status = drive_status;
-  strcpy(partition.chs_begin, chs_begin);
-  partition.partition_type = partition_type;
-  strcpy(partition.chs_end, chs_end);
-  partition.lba = lba;
-  secs_partition = secs_partition;
-
+  initializePartition(&partition, drive_status, chs_begin, partition_type, chs_end, lba, secs_partition);
+  
   //Initialize MBR
-  strcpy(firstSector.bootstrap_code, bootstrap_code);
-  firstSector.partition[0] = partition;
-  firstSector.boot_signature = boot_signature;
+  initializeMBR(&firstSector, bootstrap_code, partition, boot_signature);
 
   writeToSector(&firstSector, driveNumber);
 
