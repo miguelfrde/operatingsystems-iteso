@@ -2,16 +2,16 @@ CC := gcc
 CFLAGS := -g -Wall -Werror -std=c99 -Wno-format-contains-nul
 
 DEPENDENCIES := vdisk.o
-SRCS := dumpsec.c dumpseclog.c fileio.c shell.c vdfdisk.c vdformat.c vdlib.c createvd.c
-MAINS := dumpsec dumpseclog vdfdisk shell vdformat createvd
+SRCS := global.c dumpsec.c dumpseclog.c fileio.c shell.c vdfdisk.c vdformat.c vdlib.c createvd.c
+MAINS := dumpsec dumpseclog shell vdformat createvd
 OBJS := $(SRCS:.c=.o)
 
 all: $(MAINS)
 
-shell: shell.o fileio.o vdlib.o
+shell: shell.o fileio.o vdlib.o global.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
-vdfdisk: vdfdisk.o vdlib.o
+vdfdisk: vdfdisk.o vdlib.o global.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
 dumpsec: dumpsec.o
