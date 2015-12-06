@@ -11,30 +11,30 @@
  * Auxiliary function
  */
 unsigned short *postoptr(int fd, int pos) {
-	int currinode;
-	unsigned short *currptr;
-	unsigned short indirect1;
+  int currinode;
+  unsigned short *currptr;
+  unsigned short indirect1;
 
-	currinode = openfiles[fd].inode;
+  currinode = openfiles[fd].inode;
 
-	// In the first 16K
+  // In the first 16K
   if ((pos / 1024) < 16) {
-		// In the first 16 direct pointers
-		currptr = &inode[currinode].blocks[pos / 1024];
-	} else if ((pos / 1024) < 528) {
-		// If the indirect is empty, assign a block to it
+    // In the first 16 direct pointers
+    currptr = &inode[currinode].blocks[pos / 1024];
+  } else if ((pos / 1024) < 528) {
+    // If the indirect is empty, assign a block to it
     if (inode[currinode].indirect == 0) {
-			// The first available block
-			indirect1 = nextfreeblock();
-			assignblock(indirect1);
-			inode[currinode].indirect=indirect1;
-		}
-		currptr = &openfiles[fd].buffindirect[pos/1024 - 16];
-	} else {
-		return NULL;
-	}
+      // The first available block
+      indirect1 = nextfreeblock();
+      assignblock(indirect1);
+      inode[currinode].indirect=indirect1;
+    }
+    currptr = &openfiles[fd].buffindirect[pos/1024 - 16];
+  } else {
+    return NULL;
+  }
 
-	return currptr;
+  return currptr;
 }
 
 /**
@@ -44,7 +44,7 @@ unsigned short *postoptr(int fd, int pos) {
  */
 unsigned short *currpostoptr(int fd) {
   unsigned short *currptr;
-	currptr = postoptr(fd, openfiles[fd].currpos);
+  currptr = postoptr(fd, openfiles[fd].currpos);
   return currptr;
 }
 
@@ -52,26 +52,26 @@ unsigned short *currpostoptr(int fd) {
  * Same as above, but instead of assigning a block when indirect is zero, it returns NULL
  */
 unsigned short *postoptr_read(int fd, int pos) {
-	int currinode;
-	unsigned short *currptr;
+  int currinode;
+  unsigned short *currptr;
 
-	currinode = openfiles[fd].inode;
+  currinode = openfiles[fd].inode;
 
-	// In the first 16K
+  // In the first 16K
   if ((pos / 1024) < 16) {
-		// In the first 16 direct pointers
-		currptr = &inode[currinode].blocks[pos / 1024];
-	} else if ((pos / 1024) < 528) {
-		// If the indirect is empty, return NULL
+    // In the first 16 direct pointers
+    currptr = &inode[currinode].blocks[pos / 1024];
+  } else if ((pos / 1024) < 528) {
+    // If the indirect is empty, return NULL
     if (inode[currinode].indirect == 0) {
-		  return NULL;
+      return NULL;
     }
-		currptr = &openfiles[fd].buffindirect[pos/1024 - 16];
-	} else {
-		return NULL;
-	}
+    currptr = &openfiles[fd].buffindirect[pos/1024 - 16];
+  } else {
+    return NULL;
+  }
 
-	return currptr;
+  return currptr;
 }
 
 /**
@@ -79,7 +79,7 @@ unsigned short *postoptr_read(int fd, int pos) {
  */
 unsigned short *currpostoptr_read(int fd) {
   unsigned short *currptr;
-	currptr = postoptr_read(fd, openfiles[fd].currpos);
+  currptr = postoptr_read(fd, openfiles[fd].currpos);
   return currptr;
 }
 
@@ -352,73 +352,73 @@ int vdunlink(char *filename) {
 }
 
 VDDIR *vdopendir(char *path) {
-	int i = 0;
+  int i = 0;
 
-	if (!secboot_en_memoria) {
+  if (!secboot_en_memoria) {
     // Note: changed the given 0,0,0,1,1 for 0,0,0,2,1
-		vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
-		secboot_en_memoria = 1;
-	}
-
-	inicio_nodos_i = secboot.sec_res+ secboot.sec_mapa_bits_bloques;
-
-	if (!nodos_i_en_memoria) {
-		for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
-			// Note: changed the given i*8 for i*4
-			vdreadseclog(inicio_nodos_i + i, (char *)&inode[i*4]);
-		}
-
-		nodos_i_en_memoria = 1;
-	}
-
-	if (strcmp(path, ".") != 0) {
-		return NULL;
+    vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
+    secboot_en_memoria = 1;
   }
 
-	i = 0;
-	while (dirs[i] != -1 && i < 2) {
-		i++;
+  inicio_nodos_i = secboot.sec_res+ secboot.sec_mapa_bits_bloques;
+
+  if (!nodos_i_en_memoria) {
+    for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+      // Note: changed the given i*8 for i*4
+      vdreadseclog(inicio_nodos_i + i, (char *)&inode[i*4]);
+    }
+
+    nodos_i_en_memoria = 1;
   }
 
-	if (i == 2) {
-		return NULL;
+  if (strcmp(path, ".") != 0) {
+    return NULL;
   }
 
-	dirs[i] = 0;
+  i = 0;
+  while (dirs[i] != -1 && i < 2) {
+    i++;
+  }
 
-	return &dirs[i];
+  if (i == 2) {
+    return NULL;
+  }
+
+  dirs[i] = 0;
+
+  return &dirs[i];
 }
 
 int vdclosedir(VDDIR *dirdesc) {
-	(*dirdesc) = -1;
+  (*dirdesc) = -1;
   return 0;
 }
 
 vddirent *vdreaddir(VDDIR *dirdesc) {
-	if (!nodos_i_en_memoria) {
-		for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
-			// Note: changed i*8 for i*4
-			vdreadseclog(inicio_nodos_i + i, (char*)&inode[i * 4]);
-		}
+  if (!nodos_i_en_memoria) {
+    for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+      // Note: changed i*8 for i*4
+      vdreadseclog(inicio_nodos_i + i, (char*)&inode[i * 4]);
+    }
 
-		nodos_i_en_memoria = 1;
-	}
+    nodos_i_en_memoria = 1;
+  }
 
-	// Mientras no haya nodo i, avanza
+  // Mientras no haya nodo i, avanza
   // Increase while there's no inode
-	while (isinodefree(*dirdesc) && *dirdesc < 60) {
-		(*dirdesc)++;
+  while (isinodefree(*dirdesc) && *dirdesc < 60) {
+    (*dirdesc)++;
   }
 
 
-	// Point to where the inode name is
+  // Point to where the inode name is
   current.d_name = inode[*dirdesc].name;
 
-	(*dirdesc)++;
+  (*dirdesc)++;
 
-	if (*dirdesc >= 60) {
-		return NULL;
+  if (*dirdesc >= 60) {
+    return NULL;
   }
 
-	return &current;
+  return &current;
 }
