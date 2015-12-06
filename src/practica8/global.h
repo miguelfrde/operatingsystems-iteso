@@ -4,6 +4,7 @@
 #define MAX_NUM_OF_FILES_IN_ROOT 60
 #define BLOCKSMAP_SIZE 512
 #define MAX_OPEN_FILES 16
+#define MAX_SECLOG 130559
 
 typedef struct PARTITION {
   char drive_status;

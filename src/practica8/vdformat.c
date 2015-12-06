@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
   boot.sec_res = 1;
   boot.sec_mapa_bits_bloques = 16;
   boot.sec_tabla_nodos_i = 15;
-  boot.sec_log_particion = 130559; 
+  boot.sec_log_particion = MAX_SECLOG; 
   boot.sec_x_bloque = 2;
   boot.heads = HEADS;
   boot.cyls = CYLINDERS;

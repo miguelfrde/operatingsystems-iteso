@@ -24,11 +24,13 @@ int catu(char *arg1);
 int catv(char *arg1);
 int diru(char *arg1);
 int dirv();
-
+int delu(char *file);
+int delv(char *file);
 
 int main() {
   char linea[MAXLEN];
   int result = 1;
+
   while (result) {
     printf("vshell > ");
     fflush(stdout);
@@ -98,11 +100,24 @@ int executecmd(char *linea) {
   }
 
   // dir command
-  if (strcmp(cmd,"dir") == 0) {
+  if (strcmp(cmd, "dir") == 0) {
     if (arg1 == NULL) {
       dirv();
     } else if(!isinvd(arg1)) {
       diru(&arg1[2]);
+    }
+  }
+
+  // delete command
+  if (strcmp(cmd, "delete") == 0){
+    if (isinvd(arg1)){
+      if(!delv(arg1)){
+        printf("Error trying to delete the file");
+      }
+    } else {
+      if(!delu(arg1)){
+        printf("Error trying to delete the file"); 
+      }
     }
   }
 
@@ -131,7 +146,11 @@ int copyuu(char *arg1, char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = open(arg1, 0);
+  if ((sfile = open(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
+
   dfile = creat(arg2, 0640);
 
   do {
@@ -154,7 +173,11 @@ int copyuv(char *arg1, char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = open(arg1, 0);
+  if ((sfile = open(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
+
   dfile = vdcreat(arg2, 0640);
 
   do {
@@ -178,7 +201,10 @@ int copyvu(char *arg1,char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = vdopen(arg1, 0);
+  if((sfile = vdopen(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
   dfile = creat(arg2, 0640);
 
   do {
@@ -202,7 +228,11 @@ int copyvv(char *arg1,char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = vdopen(arg1, 0);
+  if ((sfile = vdopen(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
+
   dfile = vdcreat(arg2, 0640);
 
   do {
@@ -308,4 +338,26 @@ int dirv() {
   vdclosedir(dd);
 
   return 1;
+}
+
+/*
+* Deletes a file from the unix system
+*/
+int delu(char *file){
+  //Ignores the double slash
+  file += 2;
+  if (unlink(file) == 0){
+    printf("file %s removed from unix system", file);
+    return 1;
+  } else{
+    printf("error trying to remove file  %s from unix system", file); 
+    return 0;
+  }
+}
+
+/*
+* Deletes a file from the vd
+*/
+int delv(char *file){
+  return 0;
 }

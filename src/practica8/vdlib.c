@@ -313,6 +313,9 @@ int setninode(int num, char *filename, unsigned short atribs, int uid, int gid) 
     vdwriteseclog(inicio_nodos_i + i, (char*)(&inode[i * 4]));
   }
 
+  // Update the inode status
+  inode[num].status = 1;
+
   return num;
 }
 
@@ -388,11 +391,16 @@ int removeinode(int numinode) {
     inode[numinode].indirect = 0;
   }
 
+  // Mark the inode as free
+  inode[numinode].status = 0;
+
   return 1;
 }
 
 int isinodefree(int numinode) {
   if(numinode < 0 || numinode > MAX_NUM_OF_FILES_IN_ROOT)
     return -1;
-  return inode[numinode].status;
+  if (inode[numinode].status == 0)
+    return 1;
+  return 0;
 }

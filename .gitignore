@@ -58,7 +58,7 @@ src/practica8/vdformat
 src/practica8/createvd
 src/practica8/shell
 !src/practica8/vdisk.o
-
+src/practica8/notes
 
 #binaries
 main
