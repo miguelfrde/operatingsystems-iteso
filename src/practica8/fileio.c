@@ -1,15 +1,41 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <string.h>
+#include "global.h"
 #include "fileio.h"
 #include "vdlib.h"
+#include "vdisk.h"
 
-#define MAX_OPEN_FILES 16
+/**
+ * Auxiliary function
+ */
+unsigned short *postoptr(int fd, int pos) {
+	int currinode;
+	unsigned short *currptr;
+	unsigned short indirect1;
 
-OPEN_FILE openfiles[MAX_OPEN_FILES];
-INODE inode[MAX_NUM_OF_FILES_IN_ROOT];
-int openfiles_inicializada = 0;
-int inicio_nodos_i;
+	currinode = openfiles[fd].inode;
+
+	// In the first 16K
+  if ((pos / 1024) < 16) {
+		// In the first 16 direct pointers
+		currptr = &inode[currinode].blocks[pos / 1024];
+	} else if ((pos / 1024) < 528) {
+		// If the indirect is empty, assign a block to it
+    if (inode[currinode].indirect == 0) {
+			// The first available block
+			indirect1 = nextfreeblock();
+			assignblock(indirect1);
+			inode[currinode].indirect=indirect1;
+		}
+		currptr = &openfiles[fd].buffindirect[pos/1024 - 16];
+	} else {
+		return NULL;
+	}
+
+	return currptr;
+}
 
 /**
  * Given the current position of the filepointer, return the memory address
@@ -17,8 +43,9 @@ int inicio_nodos_i;
  * file pointer is
  */
 unsigned short *currpostoptr(int fd) {
-  // TODO
-  return 0;
+  unsigned short *currptr;
+	currptr = postoptr(fd, openfiles[fd].currpos);
+  return currptr;
 }
 
 
@@ -210,17 +237,74 @@ int vdunlink(char *filename) {
   return 0;
 }
 
-VDDIR *vdopendir(char *name) {
-  // TODO
-  return NULL;
+VDDIR *vdopendir(char *path) {
+	int i = 0;
+
+	if (!secboot_en_memoria) {
+    // Note: changed the given 0,0,0,1,1 for 0,0,0,2,1
+		vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
+		secboot_en_memoria = 1;
+	}
+
+	inicio_nodos_i = secboot.sec_res+ secboot.sec_mapa_bits_bloques;
+
+	if (!nodos_i_en_memoria) {
+		for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+			// Note: changed the given i*8 for i*4
+			vdreadseclog(inicio_nodos_i + i, (char *)&inode[i*4]);
+		}
+
+		nodos_i_en_memoria = 1;
+	}
+
+	if (strcmp(path, ".") != 0) {
+		return NULL;
+  }
+
+	i = 0;
+	while (dirs[i] != -1 && i < 2) {
+		i++;
+  }
+
+	if (i == 2) {
+		return NULL;
+  }
+
+	dirs[i] = 0;
+
+	return &dirs[i];
 }
 
-int vdclosedir(VDDIR *dirp) {
-  // TODO
+int vdclosedir(VDDIR *dirdesc) {
+	(*dirdesc) = -1;
   return 0;
 }
 
-vddirent *vdreaddir(VDDIR *dirp) {
-  // TODO
-  return NULL;
+vddirent *vdreaddir(VDDIR *dirdesc) {
+	if (!nodos_i_en_memoria) {
+		for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+			// Note: changed i*8 for i*4
+			vdreadseclog(inicio_nodos_i + i, (char*)&inode[i * 4]);
+		}
+
+		nodos_i_en_memoria = 1;
+	}
+
+	// Mientras no haya nodo i, avanza
+  // Increase while there's no inode
+	while (isinodefree(*dirdesc) && *dirdesc < 60) {
+		(*dirdesc)++;
+  }
+
+
+	// Point to where the inode name is
+  current.d_name = inode[*dirdesc].name;
+
+	(*dirdesc)++;
+
+	if (*dirdesc >= 60) {
+		return NULL;
+  }
+
+	return &current;
 }

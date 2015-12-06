@@ -1,23 +1,10 @@
 #include <time.h>
 #include <string.h>
+#include "global.h"
 #include "vdisk.h"
 #include "vdlib.h"
 
-/********************
- * Global variables *
- ********************/
-
-SECBOOT secboot;
-INODE inode[64];
-int secboot_en_memoria = 0;
-int blocksmap_en_memoria = 0;
-int nodos_i_en_memoria = 0;
-int inicio_area_datos;
-int mapa_bits_bloques;
-int inicio_nodos_i;
-char blocksmap[BLOCKSMAP_SIZE];
 int max_sectors = (HEADS * SECTORS * CYLINDERS) -1;
-
 /*************************************************
  * Functions to read and write to a logic sector *
  *************************************************/
@@ -401,8 +388,10 @@ int removeinode(int numinode) {
     inode[numinode].indirect = 0;
   }
 
-  // TODO: WTF is this function for?
-  //unassigninode(numinode);
-
   return 1;
+}
+
+int isinodefree(int inode) {
+  // TODO
+  return 0;
 }
