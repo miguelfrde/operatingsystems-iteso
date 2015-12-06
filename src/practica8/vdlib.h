@@ -20,6 +20,6 @@ unsigned int currdatetimetoint();
 int setninode(int num, char *filename, unsigned short atribs, int uid, int gid);
 int searchinode(char *filename);
 int removeinode(int numinode);
-int isinodefree(int inode);
+int isinodefree(int numinode);
 
 #endif
