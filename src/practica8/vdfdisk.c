@@ -16,7 +16,6 @@ int writeToSector(MBR *sector, int driveNumber) {
 
   for (int i = 0; i < sizeof(MBR); i++) {
     buffer[i] = *((char*) sector + i);
-    printf("%c", buffer[i]);
   }
 
   if (vdwritesector(driveNumber, 0, 0, 1, 1, buffer) == -1) {
@@ -27,53 +26,31 @@ int writeToSector(MBR *sector, int driveNumber) {
 }
 
 
-//Initialize partition
-void initializePartition(PARTITION* partition, int drive_status, char chs_begin[], char partition_type, char chs_end[], int lba, int secs_partition){
-
-  partition->drive_status = drive_status;
-  strcpy(partition->chs_begin, chs_begin);
-  partition->partition_type = partition_type;
-  strcpy(partition->chs_end, chs_end);
-  partition->lba = lba;
-  partition->secs_partition = secs_partition;
-
-} 
-
-void initializeMBR(MBR* firstSector, char bootstrap_code[], PARTITION partition, short boot_signature){
-  strcpy(firstSector->bootstrap_code, bootstrap_code);
-  firstSector->partition[0] = partition;
-  firstSector->boot_signature = boot_signature;
-}
-
 int main(int argc, char *argv[]) {
   //Reading the drive number from the args
   int driveNumber = atoi(argv[1]);
 
-  //MBR
   MBR firstSector;
   char bootstrap_code[446];
-  
-  for (int i = 0; i < 446; i++) {
-    bootstrap_code[i] = 'A';
-  }
+
+  //Fills with A's
+  memset(bootstrap_code, 65, 446);
 
   PARTITION partition;
   short boot_signature = 1;
 
-  //Partition default values
-  int drive_status = 49;
-  char chs_begin[3];
-  strcpy(chs_begin, "00P");
-  char partition_type = 'A';
-  char chs_end[3];
-  strcpy(chs_end, "NDA");
-  int lba = 49; //ascci value: 1
-  int secs_partition = 49; 
+  //Initialize PARTITION
+  partition.drive_status = 1;
+  strcpy(partition.chs_begin, "000");
+  partition.partition_type = 'A';
+  strcpy(partition.chs_end, "FFF");
+  partition.lba = 0;
+  partition.secs_partition = 130559;
 
-  initializePartition(&partition, drive_status, chs_begin, partition_type, chs_end, lba, secs_partition);
-  
   //Initialize MBR
-  initializeMBR(&firstSector, bootstrap_code, partition, boot_signature);
+  strcpy(firstSector.bootstrap_code, bootstrap_code);
+  firstSector.partition[0] = partition;
+  firstSector.boot_signature = boot_signature;
 
   writeToSector(&firstSector, driveNumber);
 
