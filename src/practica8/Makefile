@@ -3,7 +3,7 @@ CFLAGS := -g -Wall -Werror -std=c99 -Wno-format-contains-nul
 
 DEPENDENCIES := vdisk.o
 SRCS := global.c dumpsec.c dumpseclog.c fileio.c shell.c vdfdisk.c vdformat.c vdlib.c createvd.c
-MAINS := dumpsec dumpseclog shell vdformat createvd
+MAINS := dumpsec dumpseclog shell vdformat createvd vdfdisk
 OBJS := $(SRCS:.c=.o)
 
 all: $(MAINS)

@@ -367,7 +367,7 @@ VDDIR *vdopendir(char *path) {
   if (!nodos_i_en_memoria) {
     for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
       // Note: changed the given i*8 for i*4
-      vdreadseclog(inicio_nodos_i + i, (char *)&inode[i*4]);
+      vdreadseclog(inicio_nodos_i + i, (char *)&inode[i*8]);
     }
 
     nodos_i_en_memoria = 1;
@@ -399,8 +399,7 @@ int vdclosedir(VDDIR *dirdesc) {
 vddirent *vdreaddir(VDDIR *dirdesc) {
   if (!nodos_i_en_memoria) {
     for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
-      // Note: changed i*8 for i*4
-      vdreadseclog(inicio_nodos_i + i, (char*)&inode[i * 4]);
+      vdreadseclog(inicio_nodos_i + i, (char*)&inode[i * 8]);
     }
 
     nodos_i_en_memoria = 1;

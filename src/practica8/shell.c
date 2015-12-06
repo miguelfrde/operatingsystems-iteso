@@ -61,6 +61,10 @@ int executecmd(char *linea) {
   arg1 = strtok(NULL, " ");
   arg2 = strtok(NULL, " ");
 
+  if (cmd == NULL) {
+    return 1;
+  }
+
   // exit command
   if (strcmp(cmd, "exit") == 0) {
     return 0;
@@ -102,7 +106,7 @@ int executecmd(char *linea) {
     }
   }
 
-  return 0;
+  return 1;
 }
 
 
