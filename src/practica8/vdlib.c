@@ -4,18 +4,34 @@
 #include "vdisk.h"
 #include "vdlib.h"
 
+int max_sectors = (HEADS * SECTORS * CYLINDERS) -1;
 /*************************************************
  * Functions to read and write to a logic sector *
  *************************************************/
-
 int vdwriteseclog(int sec_log, char *buffer) {
-  // TODO
-  return 0;
+  if (sec_log > max_sectors || sec_log < 0)
+    return -1;
+
+  // Calculates the sector, cilinder and head from logical sector
+  int sector_offset = sec_log + 1;
+  int cilinder = sector_offset/(SECTORS * HEADS);
+  int head = (sector_offset/SECTORS) % HEADS;
+  int sector = (sector_offset % SECTORS) + 1;
+
+  return vdwritesector(0, head, cilinder, sector, 1, (unsigned char *) buffer);
 }
 
 int vdreadseclog(int sec_log, char *buffer) {
-  // TODO
-  return 0;
+  if (sec_log > max_sectors || sec_log < 0)
+    return -1;
+
+  // Calculates the sector, cilinder and head from logical sector
+  int sector_offset = sec_log + 1;
+  int cilinder = sector_offset/(SECTORS * HEADS);
+  int head = (sector_offset/SECTORS) % HEADS;
+  int sector = (sector_offset % SECTORS) + 1;
+
+  return vdreadsector(0, head, cilinder, sector, 1, (unsigned char *) buffer);
 }
 
 /**************************************************
