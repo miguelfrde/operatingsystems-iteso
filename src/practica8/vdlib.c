@@ -2,7 +2,6 @@
 #include <string.h>
 #include "vdisk.h"
 #include "vdlib.h"
-#include <stdbool.h>
 
 /********************
  * Global variables *
