@@ -4,11 +4,11 @@
 #define _FILE_IO_H_
 
 
-int vdcreat(char* pathname, unsigned short flags);
+int vdcreat(char* filename, unsigned short flags);
 
-int vdopen(char* pathname, unsigned short flags);
+int vdopen(char* filename, unsigned short flags);
 
-int vdread(int fd, void *buf, int count);
+int vdread(int fd, char *buf, int count);
 
 int vdwrite(int fd, char *buf, int bytes);
 
