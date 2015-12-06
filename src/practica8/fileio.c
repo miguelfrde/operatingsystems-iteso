@@ -408,7 +408,7 @@ vddirent *vdreaddir(VDDIR *dirdesc) {
 
   // Mientras no haya nodo i, avanza
   // Increase while there's no inode
-  while (isinodefree(*dirdesc) && *dirdesc < 60) {
+  while (isinodefree(*dirdesc) && strlen(inode[*dirdesc].name) == 0 && *dirdesc < MAX_NUM_OF_FILES_IN_ROOT) {
     (*dirdesc)++;
   }
 
@@ -418,7 +418,7 @@ vddirent *vdreaddir(VDDIR *dirdesc) {
 
   (*dirdesc)++;
 
-  if (*dirdesc >= 60) {
+  if (*dirdesc >= MAX_NUM_OF_FILES_IN_ROOT) {
     return NULL;
   }
 
