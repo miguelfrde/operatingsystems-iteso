@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
   if (argc == 2) {
     sector = atoi(argv[1]);
-    if (sector > SECTORS || sector < 0) {
+    if (sector > MAX_SECLOG || sector < 0) {
       fprintf(stderr, "Posición invalida\n");
       exit(1);
     }
