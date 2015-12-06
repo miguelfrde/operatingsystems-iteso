@@ -17,7 +17,7 @@ vdfdisk: vdfdisk.o vdlib.o global.o
 dumpsec: dumpsec.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
-dumpseclog: dumpseclog.o
+dumpseclog: dumpseclog.o vdlib.o global.o
 	$(CC) $(CFLAGS) -o $@ $^ $(DEPENDENCIES)
 
 createvd: createvd.o
