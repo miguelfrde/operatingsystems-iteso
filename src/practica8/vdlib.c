@@ -314,7 +314,7 @@ int setninode(int num, char *filename, unsigned short atribs, int uid, int gid) 
   }
 
   // Update the inode status
-  inode[num].status = '1';
+  inode[num].status = 1;
 
   return num;
 }
@@ -392,7 +392,7 @@ int removeinode(int numinode) {
   }
 
   // Mark the inode as free
-  inode[numinode].status = '0';
+  inode[numinode].status = 0;
 
   return 1;
 }
@@ -400,7 +400,7 @@ int removeinode(int numinode) {
 int isinodefree(int numinode) {
   if(numinode < 0 || numinode > MAX_NUM_OF_FILES_IN_ROOT)
     return -1;
-  if (inode[numinode].status == '0')
+  if (inode[numinode].status == 0)
     return 1;
   return 0;
 }
