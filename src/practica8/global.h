@@ -17,7 +17,7 @@ typedef struct PARTITION {
 // Lo que vamos a escribir en el primer sector del disco
 // Debe medir 512 bytes
 typedef struct MBR {
-  char bootstrap_code[446];
+  char bootstrap_code[442];
   struct PARTITION partition[4];
   short boot_signature;
 } MBR;
