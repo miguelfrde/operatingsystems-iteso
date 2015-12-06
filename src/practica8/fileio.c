@@ -50,11 +50,13 @@ unsigned short *currpostoptr(int fd) {
 
 
 /**
- * TODO: go through the inodes table until we find a free one
+ * go through the inodes table until we find a free one
  */
 int nextfreeinode() {
-  // TODO
-  return 0;
+  for (int i = 0; i < MAX_NUM_OF_FILES_IN_ROOT; ++i) {
+    if(isinodefree(i)) return i;
+  }
+  return -1;
 }
 
 

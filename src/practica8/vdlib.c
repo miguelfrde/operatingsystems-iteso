@@ -393,6 +393,6 @@ int removeinode(int numinode) {
 
 int isinodefree(int numinode) {
   if(numinode < 0 || numinode > MAX_NUM_OF_FILES_IN_ROOT)
-    return 0;
+    return -1;
   return inode[numinode].status;
 }
