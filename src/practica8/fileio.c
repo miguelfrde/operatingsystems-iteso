@@ -48,6 +48,41 @@ unsigned short *currpostoptr(int fd) {
   return currptr;
 }
 
+/**
+ * Same as above, but instead of assigning a block when indirect is zero, it returns NULL
+ */
+unsigned short *postoptr_read(int fd, int pos) {
+	int currinode;
+	unsigned short *currptr;
+
+	currinode = openfiles[fd].inode;
+
+	// In the first 16K
+  if ((pos / 1024) < 16) {
+		// In the first 16 direct pointers
+		currptr = &inode[currinode].blocks[pos / 1024];
+	} else if ((pos / 1024) < 528) {
+		// If the indirect is empty, return NULL
+    if (inode[currinode].indirect == 0) {
+		  return NULL;
+    }
+		currptr = &openfiles[fd].buffindirect[pos/1024 - 16];
+	} else {
+		return NULL;
+	}
+
+	return currptr;
+}
+
+/**
+ * Same as currposoptr but calls postoptr_read instead of postoptr
+ */
+unsigned short *currpostoptr_read(int fd) {
+  unsigned short *currptr;
+	currptr = postoptr_read(fd, openfiles[fd].currpos);
+  return currptr;
+}
+
 
 /**
  * TODO: go through the inodes table until we find a free one
@@ -83,7 +118,7 @@ int vdcreat(char *filename, unsigned short perms) {
   setninode(numinode, filename, perms, getuid(), getgid());
 
   if (!openfiles_inicializada) {
-    for (int i = 3; i < 16; i++) {
+    for (int i = 3; i < MAX_OPEN_FILES; i++) {
       openfiles[i].inuse = 0;
       openfiles[i].currbloqueenmemoria = -1;
     }
@@ -103,15 +138,85 @@ int vdcreat(char *filename, unsigned short perms) {
 }
 
 
-int vdopen(char* pathname, unsigned short flags) {
-  // TODO
-  return 0;
+int vdopen(char* filename, unsigned short flags) {
+  int numinode;
+  unsigned short block;
+
+  // Check if the file exists
+  numinode = searchinode(filename);
+
+  // If the file doesn't exist
+  if (numinode == -1) {
+    return -1;
+  }
+
+  // If the open files table hast not been initialized, initialize it
+  if (!openfiles_inicializada) {
+    for (int i = 3; i < MAX_OPEN_FILES; i++) {
+      openfiles[i].inuse = 0;
+      openfiles[i].currbloqueenmemoria = -1;
+    }
+    openfiles_inicializada = 1;
+  }
+
+  // Check if there's place in the open file table. If not, return -1
+  for (int i = 3; i < MAX_OPEN_FILES; i++) {
+    if (!openfiles[i].inuse) {
+      openfiles[i].inuse = 1;
+      openfiles[i].inode = numinode;
+      openfiles[i].currpos = 0;
+
+      // If the inode has an indirect pointer, load it in the openfile indirect buffer
+      if (inode[numinode].indirect != 0) {
+        readblock(inode[numinode].indirect, (char*)openfiles[i].buffindirect);
+      }
+
+      // Load the buffer with the first block
+      block = *currpostoptr(i);
+      readblock(block, openfiles[i].buffer);
+      openfiles[i].currbloqueenmemoria = block;
+
+      return i;
+    }
+  }
+  return -1;
 }
 
 
-int vdread(int fd, void *buf, int count) {
-  // TODO
-  return 0;
+int vdread(int fd, char *buf, int count) {
+  // Fail if the file is not open
+  if (!openfiles[fd].inuse) {
+    return -1;
+  }
+
+  for (int i = 0; i < count; i++) {
+    int block;
+    unsigned short *ptr = currpostoptr_read(fd);
+
+    if (ptr == NULL) {
+      return -1;
+    }
+
+    block = *ptr;
+
+    // If we don't have the block in memory, read it and load it in memory
+    if (openfiles[fd].currbloqueenmemoria != block) {
+      readblock(block, openfiles[fd].buffer);
+      openfiles[fd].currbloqueenmemoria = block;
+    }
+
+    // Copy the character to the buffer
+    buf[i] = openfiles[fd].buffer[openfiles[fd].currpos % 1024];
+
+    openfiles[fd].currpos++;
+
+    // If we reach the end of the file, return the number of bytes read
+    if (openfiles[fd].currpos > inode[openfiles[fd].inode].size) {
+      return i;
+    }
+  }
+
+  return count;
 }
 
 
@@ -224,7 +329,16 @@ int vdseek(int fd, int offset, int whence) {
 }
 
 int vdclose(int fd) {
-  // TODO
+  // Fail if the file is not open
+  if (!openfiles[fd].inuse) {
+    return -1;
+  }
+
+  // Make sure we saved the buffer in their respective direct block and the indirect blocks
+  writeblock(openfiles[fd].currbloqueenmemoria, openfiles[fd].buffer);
+  writeblock(inode[openfiles[fd].inode].indirect, (char*)openfiles[fd].buffindirect);
+
+  openfiles[fd].inuse = 0;
   return 0;
 }
 
