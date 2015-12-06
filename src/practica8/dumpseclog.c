@@ -1,34 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "global.h"
 #include "vdisk.h"
+#include "vdlib.h"
 
 #define LINESIZE 16
 #define SECSIZE 512
 
 int main(int argc, char *argv[]) {
-  // TODO
-  int drive;
-  int ncyl, nhead, nsec;
-  unsigned char buffer[SECSIZE];
+  int sector;
+  char buffer[SECSIZE];
   unsigned char c;
 
-  if (argc == 5) {
-    drive = atoi(argv[1]);
-    ncyl = atoi(argv[2]);
-    nhead = atoi(argv[3]);
-    nsec = atoi(argv[4]);
-    if (drive < 0 || drive > 3 || ncyl > CYLINDERS || nhead > HEADS || nsec > SECTORS || ncyl < 0 || nhead < 0 || nsec < 1) {
+  if (argc == 2) {
+    sector = atoi(argv[1]);
+    if (sector > SECTORS || sector < 0) {
       fprintf(stderr, "Posición invalida\n");
       exit(1);
     }
-    printf("Desplegando de disco%d.vd Cil=%d, Sup=%d, Sec=%d\n", drive, ncyl, nhead, nsec);
+    printf("Desplegando de disco el sector logico %d\n", sector);
   } else {
     fprintf(stderr, "Error en los argumentos\n");
     exit(1);
   }
 
-  if (vdreadsector(drive, nhead, ncyl, nsec, 1, buffer) == -1) {
+  if (vdreadseclog(sector, buffer) == -1) {
     fprintf(stderr, "Error al abrir disco virtual\n");
     exit(1);
   }
