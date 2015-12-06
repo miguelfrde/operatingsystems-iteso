@@ -2,6 +2,7 @@
 #include <string.h>
 #include "vdisk.h"
 #include "vdlib.h"
+#include <stdbool.h>
 
 /********************
  * Global variables *
@@ -16,12 +17,15 @@ int inicio_area_datos;
 int mapa_bits_bloques;
 int inicio_nodos_i;
 char blocksmap[BLOCKSMAP_SIZE];
+int max_sectors = (HEADS * SECTORS * CYLINDERS) -1;
 
 /*************************************************
  * Functions to read and write to a logic sector *
  *************************************************/
-
 int vdwriteseclog(int sec_log, char *buffer) {
+  if (sec_log > max_sectors || sec_log < 0)
+    return -1;
+
   // Calculates the sector, cilinder and head from logical sector
   int sector_offset = sec_log + 1;
   int cilinder = sector_offset/(SECTORS * HEADS);
@@ -32,6 +36,9 @@ int vdwriteseclog(int sec_log, char *buffer) {
 }
 
 int vdreadseclog(int sec_log, char *buffer) {
+  if (sec_log > max_sectors || sec_log < 0)
+    return -1;
+
   // Calculates the sector, cilinder and head from logical sector
   int sector_offset = sec_log + 1;
   int cilinder = sector_offset/(SECTORS * HEADS);
