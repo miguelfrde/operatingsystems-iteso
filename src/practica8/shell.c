@@ -29,6 +29,7 @@ int dirv();
 int main() {
   char linea[MAXLEN];
   int result = 1;
+
   while (result) {
     printf("vshell > ");
     fflush(stdout);
@@ -131,7 +132,11 @@ int copyuu(char *arg1, char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = open(arg1, 0);
+  if ((sfile = open(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
+
   dfile = creat(arg2, 0640);
 
   do {
@@ -154,7 +159,11 @@ int copyuv(char *arg1, char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = open(arg1, 0);
+  if ((sfile = open(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
+
   dfile = vdcreat(arg2, 0640);
 
   do {
@@ -178,7 +187,10 @@ int copyvu(char *arg1,char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = vdopen(arg1, 0);
+  if((sfile = vdopen(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
   dfile = creat(arg2, 0640);
 
   do {
@@ -202,7 +214,11 @@ int copyvv(char *arg1,char *arg2) {
   char buffer[BUFFERSIZE];
   int ncars;
 
-  sfile = vdopen(arg1, 0);
+  if ((sfile = vdopen(arg1, 0)) == -1) {
+    fprintf(stderr, "Error: archivo no existe\n");
+    return -1;
+  }
+
   dfile = vdcreat(arg2, 0640);
 
   do {
