@@ -340,6 +340,8 @@ int vdclose(int fd) {
   writeblock(openfiles[fd].currbloqueenmemoria, openfiles[fd].buffer);
   writeblock(inode[openfiles[fd].inode].indirect, (char*)openfiles[fd].buffindirect);
 
+  updateinodes();
+
   openfiles[fd].inuse = 0;
   return 0;
 }

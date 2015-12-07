@@ -7,7 +7,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "fileio.h"
-
+#include "vdisk.h"
+#include "vdlib.h"
 
 #define MAXLEN 80
 #define BUFFERSIZE 512
@@ -57,6 +58,15 @@ int executecmd(char *linea) {
   char *cmd;
   char *arg1;
   char *arg2;
+    
+  /*
+   *vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
+   *secboot_en_memoria = 1;
+   *for (int i = 0; i < secboot.sec_mapa_bits_bloques; i++) {
+   *  vdreadseclog(mapa_bits_bloques + i, blocksmap + i*512);
+   *}
+   *blocksmap_en_memoria = 1;
+   */
 
   // Splits the command and the two possible arguments
   cmd = strtok(linea, " ");

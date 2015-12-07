@@ -70,7 +70,7 @@ int isblockfree(int block) {
  * Find the next free block in the bitmap
  */
 int nextfreeblock() {
-  int i, j;
+  int i, j, sec_mapa_bits_bloques;
 
   if (!secboot_en_memoria) {
     vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
@@ -78,24 +78,29 @@ int nextfreeblock() {
   }
 
   mapa_bits_bloques = secboot.sec_res;
+  //Because the secboot is lost in the iteration for a weir reason, i'll try to store the value in other var
+  sec_mapa_bits_bloques = secboot.sec_mapa_bits_bloques;
 
   if (!blocksmap_en_memoria) {
-    for (int i = 0; i < secboot.sec_mapa_bits_bloques; i++) {
+    for (int i = 0; i < sec_mapa_bits_bloques; i++) {
       vdreadseclog(mapa_bits_bloques + i, blocksmap + i*512);
     }
     blocksmap_en_memoria = 1;
   }
+ 
+  vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
+
 
   // Go through each byte in the bitmap until a byte that is not 0xFF
   // is found
   i = 0;
-  while (blocksmap[i] == 0xFF && i < secboot.sec_mapa_bits_bloques*512) {
+  while (blocksmap[i] == 0xFF && i < sec_mapa_bits_bloques*512) {
     i++;
   }
 
   // If we find a byte in the bitmap with a bit = 0, that means that
   // there's a free block
-  if (i < secboot.sec_mapa_bits_bloques * 512) {
+  if (i < sec_mapa_bits_bloques * 512) {
     j = 0;
     while (blocksmap[i] & (1 << j) && j < 8) {
       j++;
@@ -402,5 +407,28 @@ int isinodefree(int numinode) {
     return -1;
   if (inode[numinode].status == 0)
     return 1;
+  return 0;
+}
+
+int updateinodes() {
+  if (!secboot_en_memoria) {
+    vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
+    secboot_en_memoria = 1;
+  }
+
+  inicio_nodos_i = secboot.sec_res + secboot.sec_mapa_bits_bloques;
+
+  // Save inodes from memory to disk
+  for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+    vdwriteseclog(inicio_nodos_i + i, (char *)&inode[i * 4]);
+  }
+
+  // Reload inodes from disk to memory
+  for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+    vdreadseclog(inicio_nodos_i + i, (char *)&inode[i * 4]);
+  }
+
+  nodos_i_en_memoria = 1;
+
   return 0;
 }

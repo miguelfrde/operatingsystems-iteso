@@ -21,5 +21,6 @@ int setninode(int num, char *filename, unsigned short atribs, int uid, int gid);
 int searchinode(char *filename);
 int removeinode(int numinode);
 int isinodefree(int numinode);
+int updateinodes();
 
 #endif
