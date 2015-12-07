@@ -9,7 +9,7 @@ int max_sectors = (HEADS * SECTORS * CYLINDERS) -1;
  * Functions to read and write to a logic sector *
  *************************************************/
 int vdwriteseclog(int sec_log, char *buffer) {
-  if (sec_log > max_sectors || sec_log <= 0)
+  if (sec_log > max_sectors || sec_log < 0)
     return -1;
 
   // Calculates the sector, cilinder and head from logical sector
@@ -407,5 +407,28 @@ int isinodefree(int numinode) {
     return -1;
   if (inode[numinode].status == 0)
     return 1;
+  return 0;
+}
+
+int updateinodes() {
+  if (!secboot_en_memoria) {
+    vdreadsector(0, 0, 0, 2, 1, (unsigned char *) &secboot);
+    secboot_en_memoria = 1;
+  }
+
+  inicio_nodos_i = secboot.sec_res + secboot.sec_mapa_bits_bloques;
+
+  // Save inodes from memory to disk
+  for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+    vdwriteseclog(inicio_nodos_i + i, (char *)&inode[i * 4]);
+  }
+
+  // Reload inodes from disk to memory
+  for (int i = 0; i < secboot.sec_tabla_nodos_i; i++) {
+    vdreadseclog(inicio_nodos_i + i, (char *)&inode[i * 4]);
+  }
+
+  nodos_i_en_memoria = 1;
+
   return 0;
 }
