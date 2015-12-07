@@ -53,5 +53,13 @@ int main(int argc, char* argv[]) {
 
 
   writeToSector(&boot, cylinderNumber);
+
+  // Initializes bit map
+  unsigned char map[BLOCKSMAP_SIZE];
+  map[0] = 0x80;
+  for (int i = 1; i < BLOCKSMAP_SIZE; ++i) {
+    map[i] = 0;
+  }
+  vdwritesector(0, 0, 0, 3, 1, map);
   return 0;
 }
