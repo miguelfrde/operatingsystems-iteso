@@ -282,6 +282,9 @@ int vdwrite(int fd, char *buffer, int bytes) {
       writeblock(currblock,openfiles[fd].buffer);
     }
   }
+
+  openfiles[fd].buffer[0] = buffer[0];
+
   return(cont);
 }
 
