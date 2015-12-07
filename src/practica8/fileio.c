@@ -254,7 +254,7 @@ int vdwrite(int fd, char *buffer, int bytes) {
       // Write the sector in the inode table in the disk
       sector = (currinode / 4) * 4;
       // NOTE (miguel): I'm casting the inode to char here to be able to pass it to this function
-      vdwriteseclog(inicio_nodos_i + sector, (char*)(&inode[sector * 8]));
+      vdwriteseclog(inicio_nodos_i + sector, (char*)(&inode[sector * 4]));
     }
 
     // If the block in the current position is not in memory, read the block to the file buffer
