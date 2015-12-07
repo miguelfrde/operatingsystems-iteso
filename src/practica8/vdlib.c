@@ -397,6 +397,7 @@ int removeinode(int numinode) {
   }
 
   // Mark the inode as free
+  strcpy(inode[numinode].name, "");
   inode[numinode].status = 0;
 
   return 1;

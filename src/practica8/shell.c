@@ -121,11 +121,11 @@ int executecmd(char *linea) {
   // delete command
   if (strcmp(cmd, "delete") == 0){
     if (isinvd(arg1)){
-      if(!delv(arg1)){
+      if(delv(arg1)){
         printf("Error trying to delete the file");
       }
     } else {
-      if(!delu(arg1)){
+      if(delu(arg1)){
         printf("Error trying to delete the file"); 
       }
     }
@@ -358,16 +358,15 @@ int delu(char *file){
   file += 2;
   if (unlink(file) == 0){
     printf("file %s removed from unix system", file);
-    return 1;
-  } else{
-    printf("error trying to remove file  %s from unix system", file); 
     return 0;
   }
+
+  return -1;
 }
 
 /*
 * Deletes a file from the vd
 */
 int delv(char *file){
-  return 0;
+  return vdunlink(file);
 }
